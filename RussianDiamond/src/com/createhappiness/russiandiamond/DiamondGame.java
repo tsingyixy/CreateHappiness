@@ -31,14 +31,17 @@ public class DiamondGame extends Activity implements Game{
         status = 0;
         int frameWidth = 320;
         int frameHeigth = 480;
-        _diamondView = new DiamondView(this, _frameBuffer);
+
         _frameBuffer = Bitmap.createBitmap(frameWidth, frameHeigth, Bitmap.Config.ARGB_4444);
+        _diamondView = new DiamondView(this, _frameBuffer);
         graphics = new Graphics(this.getAssets(), _frameBuffer);
         Asset.loadingImage = graphics.CreateImage("loading path");
         this.setScreen(new LoadingScreen(this));
 		setContentView(_diamondView);
-		PowerManager pm = (PowerManager)getSystemService(Context.POWER_SERVICE);
-		wakeLock = pm.newWakeLock(PowerManager.FULL_WAKE_LOCK, "Diamond Game");
+        //setContentView(R.layout.activity_diamond_game);
+		//PowerManager pm = (PowerManager)getSystemService(Context.POWER_SERVICE);
+		//wakeLock = pm.newWakeLock(PowerManager.FULL_WAKE_LOCK, "Diamond Game");
+
 
 		//Image.asset = this.getAssets();
 
@@ -48,7 +51,8 @@ public class DiamondGame extends Activity implements Game{
 	protected void onPause() {
 		// TODO Auto-generated method stub
 		super.onPause();
-		wakeLock.release();
+	//	wakeLock.release();
+
 		currentScreen.pause();
 		_diamondView.pause();
 		
@@ -58,7 +62,8 @@ public class DiamondGame extends Activity implements Game{
 	protected void onResume() {
 		// TODO Auto-generated method stub
 		super.onResume();
-		wakeLock.acquire();
+		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+//		wakeLock.acquire();
 		currentScreen.resume();
 		_diamondView.resume();
 	}

@@ -40,7 +40,8 @@ public class Graphics {
 			// TODO Auto-generated catch block
 			System.out.println("can not open file"+filepath);
 		}
-    	return (null != in) ? BitmapFactory.decodeStream(in):null;
+    	//return (null != in) ? BitmapFactory.decodeStream(in):null;
+    	return  BitmapFactory.decodeStream(in);
     }
     public void DrawImage(Bitmap image,int left ,int top){
     	//Bitmap bitmap = image.getImage();

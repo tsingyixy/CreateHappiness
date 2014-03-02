@@ -25,6 +25,7 @@ public class DiamondView extends SurfaceView implements Callback {
 		this._game = (Game)context;
 		this._holder = getHolder();
 		_holder.addCallback(this);
+		//Rect = 
 		_render = new RenderingThread(_holder);
 	}
 
@@ -45,7 +46,7 @@ public class DiamondView extends SurfaceView implements Callback {
 	}
 
 	@Override
-	//启动主循环县城
+	//启动主循环线程
 	public void surfaceCreated(SurfaceHolder arg0) {
 		// TODO Auto-generated method stub
 		this._render.runing = true;
@@ -63,6 +64,7 @@ public class DiamondView extends SurfaceView implements Callback {
 	class RenderingThread extends Thread{
         public boolean runing;
         private SurfaceHolder _holder;
+       /// Rect rect;
         public RenderingThread(SurfaceHolder holder){
         	this.runing = false;
         	this._holder = holder;
@@ -78,7 +80,7 @@ public class DiamondView extends SurfaceView implements Callback {
 					Canvas canvas = _holder.lockCanvas();
 					_game.GetCurrentScreen().update();
 					_game.GetCurrentScreen().present();
-					canvas.drawBitmap(_frameBuffer, null, getClipBounds(), null);
+					canvas.drawBitmap(_frameBuffer, null, canvas.getClipBounds(), null);
 					_holder.unlockCanvasAndPost(canvas);
 				}
 			}
