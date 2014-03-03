@@ -4,8 +4,7 @@ import android.graphics.Bitmap;
 /**
  * 
  * @author tsingyi
- *×ÊÔ´Àà£¬Ê¹ÓÃ¾²Ì¬³ÉÔ±±£´æÓÎÏ·ÖĞÓÃµ½µÄËùÓĞÍ¼Æ¬ÉùÒôµÈÎÄ¼ş
- *ÔÚÓÎÏ·¼ÓÔØµÄÊ±ºò³õÊ¼»¯ÕâĞ©×ÊÔ´
+ * èµ„æºç±»åŒ…å«äº†æ¸¸æˆä¸­ç”¨åˆ°çš„æ‰€æœ‰èµ„æºï¼Œå¦‚å¯åŠ¨ç”»é¢ï¼ŒéŸ³ä¹ç­‰
  */
 public class Asset {
       public static Bitmap loadingImage;

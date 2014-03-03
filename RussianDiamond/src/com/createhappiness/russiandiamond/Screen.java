@@ -2,7 +2,7 @@ package com.createhappiness.russiandiamond;
 
 import android.graphics.Rect;
 /**
- * Õâ¸öÀà´ú±íÁË»­ÔÚ»º³åÇøµÄÄÚÈİ£¬ÔÚÖ÷Ñ­»·µÄÊ±ºò»áÏÔÊ¾ÔÚÆÁÄ»ÉÏ
+ * åœ¨ç¼“å†²åŒºç»˜åˆ¶çš„æ¸¸æˆä¸­çš„æ¯ä¸€å¸§
  * @author tsingyi
  *
  */

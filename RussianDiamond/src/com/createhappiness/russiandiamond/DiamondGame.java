@@ -1,17 +1,18 @@
 package com.createhappiness.russiandiamond;
 
 import android.os.Bundle;
-import android.os.PowerManager;
-import android.os.PowerManager.WakeLock;
 import android.app.Activity;
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.view.Menu;
 import android.view.Window;
 import android.view.WindowManager;
 /**
- * ÓÎÏ·Ö÷»î¶¯Àà£¬ÊµÏÖÁËGame½Ó¿Ú£¬³õÊ¼»¯
- * »æ»­Àà£¬»º³åÇøµÈ
+ * æ¸¸æˆä¸»æ´»åŠ¨
+ * @graphics ç»˜ç”»å¥æŸ„
+ * @status æ¸¸æˆæ­£å¤„äºä½•ç§çŠ¶æ€
+ * @currentScreen æ¸¸æˆæ­£å‘ˆç°å“ªä¸ªç”»é¢
+ * @_frameBuffer ç”¨äºç»˜å›¾çš„ç¼“å†²åŒº
+ * @_diamondView ç”¨äºç”»å›¾çš„View
  * @author tsingyi
  *
  */
@@ -21,8 +22,6 @@ public class DiamondGame extends Activity implements Game{
     private Screen currentScreen;
     private Bitmap _frameBuffer;
     private DiamondView _diamondView;
-    private WakeLock wakeLock;
-	@SuppressWarnings("deprecation")
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -38,12 +37,6 @@ public class DiamondGame extends Activity implements Game{
         Asset.loadingImage = graphics.CreateImage("loading path");
         this.setScreen(new LoadingScreen(this));
 		setContentView(_diamondView);
-        //setContentView(R.layout.activity_diamond_game);
-		//PowerManager pm = (PowerManager)getSystemService(Context.POWER_SERVICE);
-		//wakeLock = pm.newWakeLock(PowerManager.FULL_WAKE_LOCK, "Diamond Game");
-
-
-		//Image.asset = this.getAssets();
 
 	}
 

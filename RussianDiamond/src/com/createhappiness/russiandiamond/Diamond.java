@@ -5,7 +5,7 @@ import java.util.List;
 /**
  * 
  * @author tsingyi
- *·½¿éÀà£¬µ¥¸ö·½¿é¿ÉÒÔ¾ßÓĞ¸÷ÖÖÊôĞÔ£¬×î»ù±¾µÄ¾ÍÊÇ×ø±ê
+ *æ–¹å—ç±»ï¼Œå…·æœ‰åæ ‡å’Œæ–¹å‘å±æ€§
  */
 public class Diamond { 
     public int x;
@@ -22,8 +22,7 @@ public class Diamond {
 /**
  * 
  * @author tsingyi
- *ÕıÔÚµôÂäµÄ·½¿é¶ÑÀà£¬ÓµÓĞÒ»¸öÃ¶¾Ù±äÁ¿£¬Ëæ»ú²úÉú²»Í¬
- *ĞÎ×´µÄ·½¿é¶Ñ
+ * æ­£åœ¨ä¸‹è½çš„æ–¹å—
  */
 class ShapeDiamond{     
     public List<Diamond> diamonds;
@@ -62,8 +61,7 @@ class ShapeDiamond{
 /**
  * 
  * @author tsingyi
- *Õû¸öÓÎÏ·ÊÀ½ç£¬¼´Ê¹Õû¸ö»­²¼ËùÕ¹ÏÖµÄ¿Õ¼ä£¬
- *°üÀ¨ÕıÔÚÏÂÂäµÄ·½¿éºÍÒÑ¾­ÂäÔÚµØÉÏ¶Ñ»ı¶ø³ÉµÄ·½¿é
+ * æ•´ä¸ªæ¸¸æˆä¸–ç•Œï¼ŒåŒ…æ‹¬ä¸‹è½çš„æ–¹å—å’Œå·²ç»è½ä¸‹çš„æ–¹å—
  */
 class World{
 	public List<Diamond> diamonds;
@@ -76,7 +74,7 @@ class World{
 		sum = new int[20];
 		//isNew = false;
 	}
-	public void update(){ //¸üĞÂÂß¼­£¬ÈçÕıÔÚµôÂäµÄÒÆ¶¯Ò»¸öµ¥Î»
+	public void update(){ //ï¿½ï¿½ï¿½ï¿½ï¿½ß¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Úµï¿½ï¿½ï¿½ï¿½ï¿½Æ¶ï¿½Ò»ï¿½ï¿½ï¿½ï¿½Î»
 		for(Diamond d :shape.diamonds){
 			d.y += 1;
 			if (diamonds.contains(d))

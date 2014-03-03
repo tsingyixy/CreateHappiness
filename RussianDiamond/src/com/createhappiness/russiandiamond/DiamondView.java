@@ -8,7 +8,9 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceHolder.Callback;
 import android.view.SurfaceView;
 /**
- * ¼Ì³Ğ×ÔSurfaceViewµÄÀà£¬Ö÷ÒªÓÃÓÚÓÎÏ·Ö÷Ñ­»·£¬²»Í£µÄ¸üĞÂ»­Ãæ
+ *æ¸¸æˆç»˜ç”»ä¸»å¾ªç¯
+ *@_render æ¸¸æˆä¸»å¾ªç¯çº¿ç¨‹
+ *@_game è·å–çš„æ¸¸æˆå¥æŸ„ï¼Œç”¨äºè·å¾—å…¶ä¸­çš„èµ„æºå¥æŸ„
  * @author tsingyi
  *
  */
@@ -46,7 +48,7 @@ public class DiamondView extends SurfaceView implements Callback {
 	}
 
 	@Override
-	//Æô¶¯Ö÷Ñ­»·Ïß³Ì
+	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ñ­ï¿½ï¿½ï¿½ß³ï¿½
 	public void surfaceCreated(SurfaceHolder arg0) {
 		// TODO Auto-generated method stub
 		this._render.runing = true;
@@ -59,8 +61,8 @@ public class DiamondView extends SurfaceView implements Callback {
 		this._render.runing = false;
 		
 	}
-	//¶¨ÒåÓÃÓÚÓÎÏ·Ö÷Ñ­»·µÄÏß³Ì£¬²»¶ÏµÄÖØ¸´´ÓÄÚ´æÖ¡ÖĞÈ¡³öÒ»Ö¡»æÖÆµ½
-	//»­²¼ÉÏ
+	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï·ï¿½ï¿½Ñ­ï¿½ï¿½ï¿½ï¿½ï¿½ß³Ì£ï¿½ï¿½ï¿½ï¿½Ïµï¿½ï¿½Ø¸ï¿½ï¿½ï¿½ï¿½Ú´ï¿½Ö¡ï¿½ï¿½È¡ï¿½ï¿½Ò»Ö¡ï¿½ï¿½ï¿½Æµï¿½
+	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	class RenderingThread extends Thread{
         public boolean runing;
         private SurfaceHolder _holder;

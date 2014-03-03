@@ -11,8 +11,8 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 /**
- * ����ͼ��ӿڣ����д������ȡ�Ļ������������Զ���Ļ���
- * �Լ�������Դ�Ľӿ�
+ * 绘画句柄，包括了一个画布和一个缓冲区即资源句柄
+ * 提供游戏所需的各种绘图功能
  * @author tsingyi
  *
  */

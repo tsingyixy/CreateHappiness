@@ -3,8 +3,7 @@ package com.createhappiness.russiandiamond;
 import java.util.ArrayList;
 import java.util.List;
 /**
- * 这个内存池主要用来循环使用游戏中创建的方块
- * 否则垃圾回收器会不断调用来回收被消掉的方块
+ * 鐢ㄤ簬鍥炴敹寰幆鍒╃敤娓告垙涓殑鏂瑰潡鐨勫唴瀛樻睜
  * @author tsingyi
  *
  * @param <T>
