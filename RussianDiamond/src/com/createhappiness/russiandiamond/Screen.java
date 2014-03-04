@@ -34,20 +34,20 @@ class LoadingScreen extends Screen{
 	public int update(){            
 		this.g = game.getGraphics();
 		//Asset.bgImage = g.CreateImage("bgIamge path");
-	//	Asset.diamondImage = g.CreateImage("blue_diamond.png");
-		Asset.loadingImage = g.CreateImage("Loading.png");
-		//Asset.mainImage = g.CreateImage("bgImage path");
-	//	Asset.playerImage = g.CreateImage("red_diamond.png");
-		//game.setScreen(this);
+		Asset.diamondImage = g.CreateImage("blue_diamond.png");
+
+		Asset.mainImage = g.CreateImage("bgImage path");
+		Asset.playerImage = g.CreateImage("red_diamond.png");
+		game.setScreen(new MainScreen(game));
 
 		
 		return 0;
 	}
 	public int present(){
-		g.DrawImage(Asset.loadingImage, 0,0);
-		Asset.playerImage = g.CreateImage("red_diamond.png");
-		Asset.diamondImage = g.CreateImage("blue_diamond.png");
-		game.setScreen(new MainScreen(game));
+		//g.DrawImage(Asset.loadingImage, 0,0);
+		//Asset.playerImage = g.CreateImage("red_diamond.png");
+		//Asset.diamondImage = g.CreateImage("blue_diamond.png");
+
 		return 0;
 	}
 }
@@ -55,10 +55,24 @@ class MainScreen extends Screen{
 	public MainScreen(Game game){
 		super(game);
 	}
+	public int update(){
+		game.setScreen(new GameScreen(game,new World(game.getGraphics())));
+		return 0;
+	}
 }
 class GameScreen extends Screen{
-	public GameScreen(Game game){
+	private World world;
+	public GameScreen(Game game,World w){
 		super(game);
+		this.world = w;
+	}
+	public int update(){
+		world.update();
+		return 0;
+	}
+	public int present(){
+		world.present();
+		return 0;
 	}
 }
 class EndScreen extends Screen{

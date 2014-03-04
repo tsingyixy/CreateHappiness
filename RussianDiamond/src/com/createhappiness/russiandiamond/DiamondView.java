@@ -27,6 +27,7 @@ public class DiamondView extends SurfaceView implements Callback {
 		this._game = (Game)context;
 		this._holder = getHolder();
 		_holder.addCallback(this);
+        DrawLoading();
 		//Rect = 
 		_render = new RenderingThread(_holder);
 	}
@@ -46,9 +47,12 @@ public class DiamondView extends SurfaceView implements Callback {
 		// TODO Auto-generated method stub
 		
 	}
-
+	public void DrawLoading(){       //在加载所有资源之前绘制Loading画面，然后其他资源在后台逐渐加载
+		Canvas canvas = _holder.lockCanvas();
+		canvas.drawBitmap(Asset.loadingImage, null,canvas.getClipBounds(),null);
+	}
 	@Override
-	//������ѭ���߳�
+
 	public void surfaceCreated(SurfaceHolder arg0) {
 		// TODO Auto-generated method stub
 		this._render.runing = true;
@@ -61,8 +65,8 @@ public class DiamondView extends SurfaceView implements Callback {
 		this._render.runing = false;
 		
 	}
-	//����������Ϸ��ѭ�����̣߳����ϵ��ظ����ڴ�֡��ȡ��һ֡���Ƶ�
-	//������
+	
+	//渲染主线程
 	class RenderingThread extends Thread{
         public boolean runing;
         private SurfaceHolder _holder;
@@ -89,6 +93,7 @@ public class DiamondView extends SurfaceView implements Callback {
 		}
 		
 	}
+
 	public void resume() {
 		// TODO Auto-generated method stub
 		_render.runing = true;

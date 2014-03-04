@@ -4,6 +4,8 @@ import android.os.Bundle;
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.view.Menu;
+import android.view.Surface;
+import android.view.SurfaceHolder;
 import android.view.Window;
 import android.view.WindowManager;
 /**
@@ -32,9 +34,9 @@ public class DiamondGame extends Activity implements Game{
         int frameHeigth = 480;
 
         _frameBuffer = Bitmap.createBitmap(frameWidth, frameHeigth, Bitmap.Config.ARGB_4444);
-        _diamondView = new DiamondView(this, _frameBuffer);
         graphics = new Graphics(this.getAssets(), _frameBuffer);
-        Asset.loadingImage = graphics.CreateImage("loading path");
+		Asset.loadingImage = graphics.CreateImage("Loading.png");
+	    _diamondView = new DiamondView(this, _frameBuffer);
         this.setScreen(new LoadingScreen(this));
 		setContentView(_diamondView);
 
@@ -73,7 +75,6 @@ public class DiamondGame extends Activity implements Game{
 		// TODO Auto-generated method stub
 		return graphics;
 	}
-
 	@Override
 	public int getStutas() {
 		// TODO Auto-generated method stub

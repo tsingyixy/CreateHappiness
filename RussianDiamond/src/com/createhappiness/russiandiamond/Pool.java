@@ -8,22 +8,26 @@ import java.util.List;
  *
  * @param <T>
  */
-class Pool<T> {
-      private List<T> allocated;
-      private List<T> unallocated;
-      public void push(T object){
+class DiamondPool {
+      private List<Diamond> allocated;
+      private List<Diamond> unallocated;
+      public Diamond push(Diamond object){
     	  allocated.add(object);
+    	  return object;
       }
-      public Pool(){
-    	  allocated = new ArrayList<T>();
-    	  unallocated = new ArrayList<T>();
+      public DiamondPool(){
+    	  allocated = new ArrayList<Diamond>();
+    	  unallocated = new ArrayList<Diamond>();
       }
-      public T getInstance(){
-           T object = unallocated.remove(unallocated.size() - 1);
+      public int size(){
+    	  return unallocated.size();
+      }
+      public Diamond getInstance(){
+    	  Diamond object = unallocated.remove(unallocated.size() - 1);
            allocated.add(object);
           return object;
       }
-      public void Free(T object){
+      public void Free(Diamond object){
     	  unallocated.add(object);
       }
 }
