@@ -2,8 +2,6 @@ package com.createhappiness.russiandiamond;
 
 import java.util.Random;
 import android.view.*;
-import android.support.v4.widget.SimpleCursorAdapter.ViewBinder;
-import android.view.accessibility.AccessibilityManager.TouchExplorationStateChangeListener;
 /**
  * 
  * @author tsingyi
@@ -46,13 +44,13 @@ class Player{
     	this.world = world;
     	this.g = g;
     	Random r = new Random();
-    	Init(0);
+    	Init(Math.abs(r.nextInt() % 6));
     }
     public void reset(){
     	x = 7;
     	y= 0;
     	Random r = new Random();
-    	Init(0);
+    	Init(Math.abs(r.nextInt() % 6));
     }
     private void Init(int shape){
     	switch (shape) {
@@ -60,7 +58,20 @@ class Player{
 	    	diamonds = new int[][]{{1,1},{1,1}};
 			break;
 		case 1:
-			//diamonds.add(diamondPool.)
+			diamonds = new int[][]{{1,1,1,1},{0,0,0,0}};
+			break;
+		case 2:
+			diamonds = new int[][]{{1,1,0},{0,1,1}};
+			break;
+		case 3:
+			diamonds = new int[][]{{1,1},{0,1},{0,1}};
+			break;
+		case 4:
+			diamonds = new int[][]{{1,1,1},{1,0,1}};
+			break;
+		case 5:
+			diamonds = new int[][]{{0,1,0},{1,1,1}};
+			break;
 		default:
 			break;
 		}
@@ -79,10 +90,20 @@ class Player{
 		return 0;
 	}
     public int Transformation(){
+    	int temp = 0;
+    	int len = diamonds.length - 1;
+    	int[][] _diamond = new int[diamonds[0].length][diamonds.length];
         for(int i = 0 ; i < diamonds.length ;++ i)
         	for(int j = 0 ; j < diamonds[i].length ; ++ j){
-        		diamonds[j][i] = diamonds[i][j];
-        	} 		
+        		_diamond[j][i] = diamonds[i][j];
+        	} 
+        for(int i = 0 ; i < _diamond.length ;++ i)
+        	for(int j = 0 ; j < _diamond[i].length / 2 ; ++ j){
+        		temp = _diamond[i][j];
+        		_diamond[i][j] = _diamond[i][len -j];
+        		_diamond[i][len -j] = temp;
+        	}
+        diamonds = _diamond;
     	return 0;
     }
     public int Accerlate(){           //down more quickly
@@ -92,7 +113,7 @@ class Player{
     	boolean stop = false;
         if(y < world.length - 1)
         	for(int i = 0 ; i < diamonds[0].length; ++ i){
-        		if (world[y + 1][x + i] == 1)
+        		if (world[y+1][x + i] == 1)
         		{
         			stop = true;
         			break;
@@ -100,12 +121,12 @@ class Player{
 
         	}
         else
-        	stop = true;
+           stop = true;
 
         if(stop){
             for(int i = 0 ; i < diamonds.length ;++ i)
             	for(int j = 0 ; j < diamonds[i].length ; ++ j){
-            		world[y-j][x + i] = diamonds[j][i];
+            		world[y-i][x + j] |= diamonds[i][j];
             	}
             reset();
         }
@@ -119,7 +140,8 @@ class Player{
     public void present(){
         for(int i = 0 ; i < diamonds.length ;++ i)
         	for(int j = 0 ; j < diamonds[i].length ; ++ j){
-    	        g.DrawImage(Asset.playerImage, (x+i)*20, (y-j)*20);
+        		if(diamonds[i][j] == 1)
+    	            g.DrawImage(Asset.playerImage, (x+j)*20, (y-i)*20);
         	}
     }
 }
@@ -158,7 +180,7 @@ class World implements  View.OnTouchListener{
 	    			   fields[j] = fields[j - 1]; 
 	       }
 	       try {
-			Thread.sleep(100);
+			Thread.sleep(300);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -177,18 +199,28 @@ class World implements  View.OnTouchListener{
 	public boolean onTouch(View arg0, MotionEvent arg1) {
 		// TODO Auto-generated method stub
 		int action = arg1.getAction();
+		int downX = 0,downY = 0;
 		switch (action) {
 		case MotionEvent.ACTION_DOWN:
-			if(arg1.getX() * Asset.scaleX <= 160)
+			downX = (int) arg1.getX();
+			downY = (int) arg1.getY();
+		    if(arg1.getX() * Asset.scaleX <= 160)
 				player.LeftMove();
 			else if(arg1.getX() * Asset.scaleX > 160)
 				player.RightMove();
 			break;
+		case MotionEvent.ACTION_MOVE:
+			if(((arg1.getX() - downX) * Asset.scaleX >= 40)  || ((arg1.getY() - downY) * Asset.scaleY) >= 40)
+			    player.Transformation();
+			downX = 0;
+			downY = 0;
+			break;
+		case MotionEvent.ACTION_UP:
 
 		default:
 			break;
 		}
-		return false;
+		return true;
 	}
 }
 

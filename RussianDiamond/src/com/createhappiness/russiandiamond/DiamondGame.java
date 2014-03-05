@@ -21,7 +21,7 @@ import android.view.WindowManager;
  *
  */
 public class DiamondGame extends Activity implements Game{
-    private Graphics graphics;
+    private Graphics graphics; 
     private int status;
     private Screen currentScreen;
     private Bitmap _frameBuffer;

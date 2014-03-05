@@ -9,10 +9,10 @@ import android.view.SurfaceView;
  *
  */
 public interface Game {
-      public Graphics getGraphics();
+      public Graphics getGraphics();            //获取绘图句柄
      /// public Screen getScreen();
-      public int getStutas();
-      public Screen GetCurrentScreen();
-      public void setScreen(Screen s);
-	  public SurfaceView getView();
+      public int getStutas();                     //获取游戏状态
+      public Screen GetCurrentScreen();           //获取现在绘画的帧
+      public void setScreen(Screen s);          //设置现在绘画的帧
+	  public SurfaceView getView();           //获取当前使用的视图
 }
