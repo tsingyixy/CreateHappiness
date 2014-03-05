@@ -3,9 +3,11 @@ package com.createhappiness.russiandiamond;
 import android.os.Bundle;
 import android.app.Activity;
 import android.graphics.Bitmap;
+import android.util.DisplayMetrics;
 import android.view.Menu;
 import android.view.Surface;
 import android.view.SurfaceHolder;
+import android.view.SurfaceView;
 import android.view.Window;
 import android.view.WindowManager;
 /**
@@ -29,10 +31,16 @@ public class DiamondGame extends Activity implements Game{
 		super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,WindowManager.LayoutParams.FLAG_FULLSCREEN);
+		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         status = 0;
         int frameWidth = 320;
-        int frameHeigth = 480;
-
+        int frameHeigth = 480; 
+        DisplayMetrics metric = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(metric);
+        int width = metric.widthPixels;
+        int height = metric.heightPixels;
+        Asset.scaleX = (float)frameWidth / width;
+        Asset.scaleY = (float)frameHeigth / height;
         _frameBuffer = Bitmap.createBitmap(frameWidth, frameHeigth, Bitmap.Config.ARGB_4444);
         graphics = new Graphics(this.getAssets(), _frameBuffer);
 		Asset.loadingImage = graphics.CreateImage("Loading.png");
@@ -57,7 +65,7 @@ public class DiamondGame extends Activity implements Game{
 	protected void onResume() {
 		// TODO Auto-generated method stub
 		super.onResume();
-		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
 //		wakeLock.acquire();
 		currentScreen.resume();
 		_diamondView.resume();
@@ -86,7 +94,9 @@ public class DiamondGame extends Activity implements Game{
 		// TODO Auto-generated method stub
 		return currentScreen;
 	}
-
+    public SurfaceView getView(){
+    	return _diamondView;
+    }
 	@Override
 	public void setScreen(Screen s) {
 		// TODO Auto-generated method stub

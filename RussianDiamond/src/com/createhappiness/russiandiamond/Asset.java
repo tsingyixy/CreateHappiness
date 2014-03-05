@@ -12,4 +12,6 @@ public class Asset {
       public static Bitmap bgImage ;
       public static Bitmap diamondImage;
       public static Bitmap playerImage;
+      public static float scaleX;
+      public static float scaleY;
 }

@@ -3,6 +3,7 @@ package com.createhappiness.russiandiamond;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.util.AttributeSet;
 import android.view.SurfaceHolder;
 import android.view.SurfaceHolder.Callback;
@@ -27,7 +28,6 @@ public class DiamondView extends SurfaceView implements Callback {
 		this._game = (Game)context;
 		this._holder = getHolder();
 		_holder.addCallback(this);
-        DrawLoading();
 		//Rect = 
 		_render = new RenderingThread(_holder);
 	}
@@ -49,12 +49,15 @@ public class DiamondView extends SurfaceView implements Callback {
 	}
 	public void DrawLoading(){       //在加载所有资源之前绘制Loading画面，然后其他资源在后台逐渐加载
 		Canvas canvas = _holder.lockCanvas();
+		canvas.drawColor(Color.WHITE);
 		canvas.drawBitmap(Asset.loadingImage, null,canvas.getClipBounds(),null);
+		_holder.unlockCanvasAndPost(canvas);
 	}
 	@Override
 
 	public void surfaceCreated(SurfaceHolder arg0) {
 		// TODO Auto-generated method stub
+        DrawLoading();
 		this._render.runing = true;
 		this._render.start();
 	}

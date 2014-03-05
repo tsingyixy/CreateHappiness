@@ -36,7 +36,7 @@ class LoadingScreen extends Screen{
 		//Asset.bgImage = g.CreateImage("bgIamge path");
 		Asset.diamondImage = g.CreateImage("blue_diamond.png");
 
-		Asset.mainImage = g.CreateImage("bgImage path");
+		//Asset.mainImage = g.CreateImage("bgImage path");
 		Asset.playerImage = g.CreateImage("red_diamond.png");
 		game.setScreen(new MainScreen(game));
 
@@ -56,7 +56,7 @@ class MainScreen extends Screen{
 		super(game);
 	}
 	public int update(){
-		game.setScreen(new GameScreen(game,new World(game.getGraphics())));
+		game.setScreen(new GameScreen(game,new World(game.getGraphics(),game.getView())));
 		return 0;
 	}
 }
@@ -71,6 +71,7 @@ class GameScreen extends Screen{
 		return 0;
 	}
 	public int present(){
+		game.getGraphics().Clear();
 		world.present();
 		return 0;
 	}

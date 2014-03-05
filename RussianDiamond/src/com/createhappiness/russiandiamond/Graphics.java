@@ -50,4 +50,7 @@ public class Graphics {
     public void DrawText(String text,int left,int top){
     	canvas.drawText(text, left, top, pen);
     }
+    public void Clear(){
+    	canvas.drawColor(Color.WHITE);
+    }
 }

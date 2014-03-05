@@ -1,9 +1,9 @@
 package com.createhappiness.russiandiamond;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
-import java.util.Vector;
+import android.view.*;
+import android.support.v4.widget.SimpleCursorAdapter.ViewBinder;
+import android.view.accessibility.AccessibilityManager.TouchExplorationStateChangeListener;
 /**
  * 
  * @author tsingyi
@@ -41,18 +41,18 @@ class Player{
     private int[][] world;
     private Graphics g;
     public Player(int[][] world,Graphics g){
-    	x = 15;
+    	x = 7;
     	y= 0;
     	this.world = world;
     	this.g = g;
     	Random r = new Random();
-    	Init(r.nextInt() % 6);
+    	Init(0);
     }
     public void reset(){
-    	x = 15;
+    	x = 7;
     	y= 0;
     	Random r = new Random();
-    	Init(r.nextInt() % 6);
+    	Init(0);
     }
     private void Init(int shape){
     	switch (shape) {
@@ -74,7 +74,7 @@ class Player{
 		
 	}
 	public int RightMove(){
-		if ((x < world[0].length - 1) && world[y][x+world[0].length] != 1)
+		if ((x+ diamonds[0].length <= world[0].length - 1) && world[y][x+diamonds[0].length] != 1)
             x += 1;
 		return 0;
 	}
@@ -90,7 +90,7 @@ class Player{
     }
     public int Down(){
     	boolean stop = false;
-        if(y + 1 < world.length)
+        if(y < world.length - 1)
         	for(int i = 0 ; i < diamonds[0].length; ++ i){
         		if (world[y + 1][x + i] == 1)
         		{
@@ -99,23 +99,27 @@ class Player{
         		}
 
         	}
-            this.y += 1;
+        else
+        	stop = true;
+
         if(stop){
             for(int i = 0 ; i < diamonds.length ;++ i)
             	for(int j = 0 ; j < diamonds[i].length ; ++ j){
-            		world[j + y][x + i] = diamonds[j][i];
+            		world[y-j][x + i] = diamonds[j][i];
             	}
+            reset();
         }
+        else
+            this.y += 1;
         return 0;
     }
     public void update(){
     	Down();
-
     }
     public void present(){
         for(int i = 0 ; i < diamonds.length ;++ i)
         	for(int j = 0 ; j < diamonds[i].length ; ++ j){
-    	        g.DrawImage(Asset.playerImage, (x+i)*20, (y+j)*20);
+    	        g.DrawImage(Asset.playerImage, (x+i)*20, (y-j)*20);
         	}
     }
 }
@@ -124,17 +128,18 @@ class Player{
  * @author tsingyi
  * 整个游戏世界，包括下落的方块和已经落下的方块
  */
-class World{
+class World implements  View.OnTouchListener{
 	private Player player;
 	private int[][] fields;
 	private int sum[];
 	private Graphics graphics;
 	//private boolean isNew;
-	public World(Graphics g){ 
+	public World(Graphics g,SurfaceView view){ 
 		this.fields= new int[24][16];
 		player = new Player(fields,g);
 		sum = new int[24];
 		this.graphics = g;
+		view.setOnTouchListener(this);
 		//isNew = false;
 	}
 	public void update(){ //更新游戏逻辑
@@ -152,6 +157,12 @@ class World{
 	    		   for(int j = i ; j >=1 ; j--)
 	    			   fields[j] = fields[j - 1]; 
 	       }
+	       try {
+			Thread.sleep(100);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	public void present(){//画图到缓冲区
 		player.present();
@@ -161,6 +172,23 @@ class World{
 					graphics.DrawImage(Asset.diamondImage, j*20, i*20);
 			}
 		}
+	}
+	@Override
+	public boolean onTouch(View arg0, MotionEvent arg1) {
+		// TODO Auto-generated method stub
+		int action = arg1.getAction();
+		switch (action) {
+		case MotionEvent.ACTION_DOWN:
+			if(arg1.getX() * Asset.scaleX <= 160)
+				player.LeftMove();
+			else if(arg1.getX() * Asset.scaleX > 160)
+				player.RightMove();
+			break;
+
+		default:
+			break;
+		}
+		return false;
 	}
 }
 
