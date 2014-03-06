@@ -121,20 +121,24 @@ class Player{
 		return 0;
 	}
     public int Transformation(){
+
     	int temp = 0;
     	int len = diamonds.length - 1;
-    	int[][] _diamond = new int[diamonds[0].length][diamonds.length];
-        for(int i = 0 ; i < diamonds.length ;++ i)
-        	for(int j = 0 ; j < diamonds[i].length ; ++ j){
-        		_diamond[j][i] = diamonds[i][j];
-        	} 
-        for(int i = 0 ; i < _diamond.length ;++ i)
-        	for(int j = 0 ; j < _diamond[i].length / 2 ; ++ j){
-        		temp = _diamond[i][j];
-        		_diamond[i][j] = _diamond[i][len -j];
-        		_diamond[i][len -j] = temp;
-        	}
-        diamonds = _diamond;
+    	if(x + len < world[0].length)
+    	{
+    		int[][] _diamond = new int[diamonds[0].length][diamonds.length];
+            for(int i = 0 ; i < diamonds.length ;++ i)
+            	for(int j = 0 ; j < diamonds[i].length ; ++ j){
+            		_diamond[j][i] = diamonds[i][j];
+            	} 
+            for(int i = 0 ; i < _diamond.length ;++ i)
+            	for(int j = 0 ; j < _diamond[i].length / 2 ; ++ j){
+            		temp = _diamond[i][j];
+            		_diamond[i][j] = _diamond[i][len -j];
+            		_diamond[i][len -j] = temp;
+            	}
+            diamonds = _diamond;
+    	}
     	return 0;
     }
     public int Accerlate(){           //down more quickly
@@ -236,25 +240,24 @@ class World implements  View.OnTouchListener{
 	public boolean onTouch(View arg0, MotionEvent arg1) {
 		// TODO Auto-generated method stub
 		int action = arg1.getAction();
+		boolean isMove = false;
 		int downX = 0,downY = 0;
 		switch (action) {
 		case MotionEvent.ACTION_DOWN:
 			downX = (int) arg1.getX();
 			downY = (int) arg1.getY();
-		    if(arg1.getX() * Asset.scaleX <= 160)
-				player.LeftMove();
-			else if(arg1.getX() * Asset.scaleX > 160)
-				player.RightMove();
-
 			break;
 		case MotionEvent.ACTION_MOVE:
-			if(((arg1.getX() - downX) * Asset.scaleX >= 40)  || ((arg1.getY() - downY) * Asset.scaleY) >= 40)
-			    player.Transformation();
-
-			break;
+			isMove = true ;
+			//break;
 		case MotionEvent.ACTION_UP:
-			downX = 0;
-			downY = 0;
+			if(isMove)
+				player.Transformation();
+			else if(arg1.getX() * Asset.scaleX <= 160)
+				player.LeftMove();
+			else
+				player.RightMove();
+			break;
 		default:
 			break;
 		}
