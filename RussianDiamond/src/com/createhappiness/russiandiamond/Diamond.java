@@ -190,12 +190,18 @@ class World implements  View.OnTouchListener{
 	private int[][] fields;
 	private int sum[];
 	private Graphics graphics;
+	private float oldX;
+	private float oldY;
+	private boolean isMove;
 	//private boolean isNew;
 	public World(Graphics g,SurfaceView view){ 
 		this.fields= new int[24][16];
 		player = new Player(fields,g);
 		sum = new int[24];
 		this.graphics = g;
+		oldX = 0;
+		oldY = 0;
+		isMove = false;
 		view.setOnTouchListener(this);
 		//isNew = false;
 	}
@@ -237,26 +243,27 @@ class World implements  View.OnTouchListener{
 		}
 	}
 	@Override
-	public boolean onTouch(View arg0, MotionEvent arg1) {
+	public boolean onTouch(View arg0, MotionEvent event) {
 		// TODO Auto-generated method stub
-		int action = arg1.getAction();
-		boolean isMove = false;
-		int downX = 0,downY = 0;
+		int action = event.getAction();
+
 		switch (action) {
 		case MotionEvent.ACTION_DOWN:
-			downX = (int) arg1.getX();
-			downY = (int) arg1.getY();
-			break;
+			oldX = event.getX();
+			oldY = event.getY();
+            break;
 		case MotionEvent.ACTION_MOVE:
-			isMove = true ;
-			//break;
+            if(Math.abs(event.getX() - oldX) > Math.abs(event.getY() - oldY))
+            	isMove = true;
+			break;
 		case MotionEvent.ACTION_UP:
 			if(isMove)
 				player.Transformation();
-			else if(arg1.getX() * Asset.scaleX <= 160)
-				player.LeftMove();
+			else if(oldX * Asset.scaleX <= 160)
+			    player.LeftMove();
 			else
 				player.RightMove();
+			isMove = false;
 			break;
 		default:
 			break;
