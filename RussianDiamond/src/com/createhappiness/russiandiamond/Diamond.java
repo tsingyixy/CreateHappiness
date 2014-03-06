@@ -192,7 +192,10 @@ class World implements  View.OnTouchListener{
 	private Graphics graphics;
 	private float oldX;
 	private float oldY;
-	private boolean isMove;
+	private boolean left;
+	private boolean right;
+	private boolean down;
+	private boolean up;
 	//private boolean isNew;
 	public World(Graphics g,SurfaceView view){ 
 		this.fields= new int[24][16];
@@ -201,7 +204,7 @@ class World implements  View.OnTouchListener{
 		this.graphics = g;
 		oldX = 0;
 		oldY = 0;
-		isMove = false;
+        left = right = up = down = false;
 		view.setOnTouchListener(this);
 		//isNew = false;
 	}
@@ -253,17 +256,32 @@ class World implements  View.OnTouchListener{
 			oldY = event.getY();
             break;
 		case MotionEvent.ACTION_MOVE:
-            if(Math.abs(event.getX() - oldX) > Math.abs(event.getY() - oldY))
-            	isMove = true;
-			break;
+
+            break;
 		case MotionEvent.ACTION_UP:
-			if(isMove)
-				player.Transformation();
-			else if(oldX * Asset.scaleX <= 160)
-			    player.LeftMove();
-			else
-				player.RightMove();
-			isMove = false;
+            if((Math.abs(event.getX() - oldX) > Math.abs(event.getY() - oldY)) && event.getX() < oldX)
+            	left = true;
+            else if((Math.abs(event.getX() - oldX) > Math.abs(event.getY() - oldY)) && event.getX() > oldX)
+				right = true;
+            else if((Math.abs(event.getX() - oldX) < Math.abs(event.getY() - oldY)) && event.getY() > oldY)
+                down = true;
+            else
+            	up = true;
+			if(up)
+				{
+				    player.Transformation();
+				    up = false;
+				}
+			else if(left)
+			{
+				player.LeftMove();
+				left = false;
+			}
+			else if(right)
+				{
+				    player.RightMove();
+				    right = false;
+				}
 			break;
 		default:
 			break;
