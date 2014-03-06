@@ -267,12 +267,8 @@ class World implements  View.OnTouchListener{
                 down = true;
             else
             	up = true;
-			if(up)
-				{
-				    player.Transformation();
-				    up = false;
-				}
-			else if(left)
+
+		    if(left)
 			{
 				player.LeftMove();
 				left = false;
@@ -282,6 +278,11 @@ class World implements  View.OnTouchListener{
 				    player.RightMove();
 				    right = false;
 				}
+			else if(up)
+			{
+			    player.Transformation();
+			    up = false;
+			}
 			break;
 		default:
 			break;
