@@ -38,6 +38,7 @@ class LoadingScreen extends Screen{
 
 		//Asset.mainImage = g.CreateImage("bgImage path");
 		Asset.playerImage = g.CreateImage("red_diamond.png");
+		Asset.frequency = 0;
 		game.setScreen(new MainScreen(game));
 
 		

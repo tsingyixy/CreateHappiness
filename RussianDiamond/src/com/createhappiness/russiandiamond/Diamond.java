@@ -45,12 +45,14 @@ class Player{
     	this.g = g;
     	Random r = new Random();
     	Init(Math.abs(r.nextInt() % 6));
+    	//Init(1);
     }
     public void reset(){
     	x = 7;
     	y= 0;
     	Random r = new Random();
     	Init(Math.abs(r.nextInt() % 6));
+    	//Init(1);
     }
     private void Init(int shape){
     	switch (shape) {
@@ -78,14 +80,43 @@ class Player{
 
 
     }
-	public int LeftMove(){ 
-		if (x > 0 && world[y][x - 1] != 1)
+	public int LeftMove(){
+		boolean stop = false;
+		if (x > 0){
+			for(int i = 0 ; i < diamonds.length ;++ i)
+			{
+				if(y-i >= 0 && (diamonds[diamonds.length-1-i][0] + world[y-i][x-1]) == 2)
+				{
+					stop = true;
+					break;
+				}
+			}
+		}
+	   else{
+		   stop = true;
+	   }
+	   if(!stop)
             x -= 1;
 		return 0;
 		
 	}
 	public int RightMove(){
-		if ((x+ diamonds[0].length <= world[0].length - 1) && world[y][x+diamonds[0].length] != 1)
+		boolean stop = false;
+		if(x+diamonds[0].length < world[0].length)
+		{
+			for(int i = 0 ; i < diamonds.length ;++ i)
+			{
+				if(y-i >= 0 && (diamonds[diamonds.length-1-i][diamonds[0].length - 1] + world[y-i][x + diamonds[0].length - 1]) == 2)
+				{
+					stop = true;
+					break;
+				}
+			}
+		}
+		else{
+			stop = true;
+		}
+		if(!stop)
             x += 1;
 		return 0;
 	}
@@ -113,7 +144,7 @@ class Player{
     	boolean stop = false;
         if(y < world.length - 1)
         	for(int i = 0 ; i < diamonds[0].length; ++ i){
-        		if (world[y+1][x + i] == 1)
+        		if (world[y+1][x + i] + diamonds[0][i] == 2)
         		{
         			stop = true;
         			break;
@@ -165,26 +196,25 @@ class World implements  View.OnTouchListener{
 		//isNew = false;
 	}
 	public void update(){ //更新游戏逻辑
-	       player.update();
-	       for(int j = 0 ; j < fields.length ; ++ j )
-	       {
-	    	   sum[j] = 0;
-	    	   for(int i = 0 ; i < fields[j].length ; ++ i)
-	    	   {
-	    		   sum[j] += fields[j][i];
-	    	   }
-	       }
-	       for(int i = 0 ; i < sum.length; ++ i){
-	    	   if (sum[i] == fields[0].length)
-	    		   for(int j = i ; j >=1 ; j--)
-	    			   fields[j] = fields[j - 1]; 
-	       }
-	       try {
-			Thread.sleep(300);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+	    if (Asset.frequency == 0)   
+		    {
+	    	player.update();
+	    	for(int j = 0 ; j < fields.length ; ++ j )
+		       {
+		    	   sum[j] = 0;
+		    	   for(int i = 0 ; i < fields[j].length ; ++ i)
+		    	   {
+		    		   sum[j] += fields[j][i];
+		    	   }
+		       }
+		       for(int i = 0 ; i < sum.length; ++ i){
+		    	   if (sum[i] == fields[0].length)
+		    		   for(int j = i ; j >=1 ; j--)
+		    			   fields[j] = fields[j - 1]; 
+		       }
+		    }
+	       
+
 	}
 	public void present(){//画图到缓冲区
 		player.present();
@@ -193,6 +223,13 @@ class World implements  View.OnTouchListener{
 				if(fields[i][j] == 1)
 					graphics.DrawImage(Asset.diamondImage, j*20, i*20);
 			}
+		}
+	   try {
+			Thread.sleep(33);
+			Asset.frequency = (Asset.frequency+1) % 10;
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 	@Override
@@ -208,15 +245,16 @@ class World implements  View.OnTouchListener{
 				player.LeftMove();
 			else if(arg1.getX() * Asset.scaleX > 160)
 				player.RightMove();
+
 			break;
 		case MotionEvent.ACTION_MOVE:
 			if(((arg1.getX() - downX) * Asset.scaleX >= 40)  || ((arg1.getY() - downY) * Asset.scaleY) >= 40)
 			    player.Transformation();
-			downX = 0;
-			downY = 0;
+
 			break;
 		case MotionEvent.ACTION_UP:
-
+			downX = 0;
+			downY = 0;
 		default:
 			break;
 		}

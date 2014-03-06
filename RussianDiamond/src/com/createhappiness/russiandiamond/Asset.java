@@ -14,4 +14,5 @@ public class Asset {
       public static Bitmap playerImage;
       public static float scaleX;
       public static float scaleY;
+      public static int frequency ;
 }
