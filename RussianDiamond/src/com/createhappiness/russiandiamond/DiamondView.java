@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceHolder.Callback;
 import android.view.SurfaceView;
@@ -30,6 +31,7 @@ public class DiamondView extends SurfaceView implements Callback {
 		_holder.addCallback(this);
 		//Rect = 
 		_render = new RenderingThread(_holder);
+		Log.i("THQ", "end of DiamondView constructer");
 	}
 
 	public DiamondView(Context context, AttributeSet attrs) {
@@ -48,6 +50,7 @@ public class DiamondView extends SurfaceView implements Callback {
 		
 	}
 	public void DrawLoading(){       //在加载所有资源之前绘制Loading画面，然后其他资源在后台逐渐加载
+		Log.i("THQ", "Draw Loading");
 		Canvas canvas = _holder.lockCanvas();
 		canvas.drawColor(Color.WHITE);
 		canvas.drawBitmap(Asset.loadingImage, null,canvas.getClipBounds(),null);

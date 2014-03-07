@@ -60,7 +60,7 @@ class Player{
 	    	diamonds = new int[][]{{1,1},{1,1}};
 			break;
 		case 1:
-			diamonds = new int[][]{{1,1,1,1},{0,0,0,0}};
+			diamonds = new int[][]{{1,1,1,1}};
 			break;
 		case 2:
 			diamonds = new int[][]{{1,1,0},{0,1,1}};
@@ -81,42 +81,13 @@ class Player{
 
     }
 	public int LeftMove(){
-		boolean stop = false;
-		if (x > 0){
-			for(int i = 0 ; i < diamonds.length ;++ i)
-			{
-				if(y-i >= 0 && (diamonds[diamonds.length-1-i][0] + world[y-i][x-1]) == 2)
-				{
-					stop = true;
-					break;
-				}
-			}
-		}
-	   else{
-		   stop = true;
-	   }
-	   if(!stop)
-            x -= 1;
+        if(CheckOverlap(x, y, diamonds, world, -1))
+        	x -=1;
 		return 0;
 		
 	}
 	public int RightMove(){
-		boolean stop = false;
-		if(x+diamonds[0].length < world[0].length)
-		{
-			for(int i = 0 ; i < diamonds.length ;++ i)
-			{
-				if(y-i >= 0 && (diamonds[diamonds.length-1-i][diamonds[0].length - 1] + world[y-i][x + diamonds[0].length - 1]) == 2)
-				{
-					stop = true;
-					break;
-				}
-			}
-		}
-		else{
-			stop = true;
-		}
-		if(!stop)
+		if(CheckOverlap(x, y, diamonds, world, 1))
             x += 1;
 		return 0;
 	}
@@ -141,32 +112,61 @@ class Player{
     	}
     	return 0;
     }
-    public int Accerlate(){           //down more quickly
+    public int Accerlate(){           //丢下该方块
+    	while(CheckOverlap(x, y, diamonds, world, 0))
+    		{ 
+    		    Down();
+    		    try {
+					Thread.sleep(33);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+    		}
     	return 0;
     }
+    public boolean CheckOverlap(int x, int y,int[][] diamonds,int[][] world,int direction){//检查能否移动
+
+        if(direction == -1){        //向左
+        	if(x - 1 < 0)           //超出边界不能移动
+        		return false;
+        	for(int i = 0 ; i < diamonds.length ; ++ i)         //左边已经有了方块不能移动
+        		for(int j = 0 ; j < diamonds[i].length ; ++ j)
+        			if(y-diamonds.length+i +1 >= 0 && (diamonds[i][j] + world[y-(diamonds.length -1 )+i][x-1+j] == 2))
+        				return false;
+        	return true;
+        }
+        if(direction == 0){             //向下
+        	if(y + 1 > world.length - 1)//超出底边不能移动
+        		return false;
+        	for(int i = 0 ; i < diamonds.length ; ++ i)
+        	    for(int j = 0 ; j < diamonds[i].length ; ++ j)
+        			if(y+1-i >=0 && diamonds[i][j] + world[y+1-i][x+j] == 2)
+        				return false;
+        		return true;
+        		
+        }
+        if(direction == 1){             //向右
+        	if(x + diamonds[0].length > world[0].length - 1)//超出右边不能移动
+        		return false;
+        	for(int i = 0 ; i < diamonds.length ; ++ i)         //下边已经有了方块不能移动
+        		for(int j = 0 ; j < diamonds[i].length ; ++j)
+        			if(y+1-diamonds.length+i >=0 && diamonds[i][j] + world[y+1-diamonds.length+i][x+j+1] == 2)
+        				return false;
+        		return true;
+        }
+        return true;
+    }
     public int Down(){
-    	boolean stop = false;
-        if(y < world.length - 1)
-        	for(int i = 0 ; i < diamonds[0].length; ++ i){
-        		if (world[y+1][x + i] + diamonds[0][i] == 2)
-        		{
-        			stop = true;
-        			break;
-        		}
-
-        	}
-        else
-           stop = true;
-
-        if(stop){
+        if(CheckOverlap(x, y, diamonds, world, 0))
+        	y ++;
+        else{
             for(int i = 0 ; i < diamonds.length ;++ i)
             	for(int j = 0 ; j < diamonds[i].length ; ++ j){
             		world[y-i][x + j] |= diamonds[i][j];
             	}
             reset();
         }
-        else
-            this.y += 1;
         return 0;
     }
     public void update(){
@@ -192,10 +192,7 @@ class World implements  View.OnTouchListener{
 	private Graphics graphics;
 	private float oldX;
 	private float oldY;
-	private boolean left;
-	private boolean right;
-	private boolean down;
-	private boolean up;
+
 	//private boolean isNew;
 	public World(Graphics g,SurfaceView view){ 
 		this.fields= new int[24][16];
@@ -204,7 +201,6 @@ class World implements  View.OnTouchListener{
 		this.graphics = g;
 		oldX = 0;
 		oldY = 0;
-        left = right = up = down = false;
 		view.setOnTouchListener(this);
 		//isNew = false;
 	}
@@ -259,30 +255,16 @@ class World implements  View.OnTouchListener{
 
             break;
 		case MotionEvent.ACTION_UP:
-            if((Math.abs(event.getX() - oldX) > Math.abs(event.getY() - oldY)) && event.getX() < oldX)
-            	left = true;
-            else if((Math.abs(event.getX() - oldX) > Math.abs(event.getY() - oldY)) && event.getX() > oldX)
-				right = true;
-            else if((Math.abs(event.getX() - oldX) < Math.abs(event.getY() - oldY)) && event.getY() > oldY)
-                down = true;
-            else
-            	up = true;
-
-		    if(left)
-			{
-				player.LeftMove();
-				left = false;
-			}
-			else if(right)
-				{
-				    player.RightMove();
-				    right = false;
-				}
-			else if(up)
-			{
-			    player.Transformation();
-			    up = false;
-			}
+            if(((Math.abs(event.getX() - oldX) * Asset.scaleX < 20) &&
+            		(Math.abs(event.getY() - oldY)) * Asset.scaleY < 20) && (oldX * Asset.scaleX <= 160))
+            	player.LeftMove();
+            else if(((Math.abs(event.getX() - oldX) * Asset.scaleX < 20) &&
+            		(Math.abs(event.getY() - oldY)) * Asset.scaleY < 20) && (oldX * Asset.scaleX > 160))
+            	player.RightMove();
+            else if((Math.abs(event.getY() - oldY) * Asset.scaleY > 20) && event.getY() < oldY)
+                player.Transformation();
+            else if((Math.abs(event.getY() - oldY) * Asset.scaleY > 20) && event.getY() > oldY)
+            	player.Accerlate();
 			break;
 		default:
 			break;

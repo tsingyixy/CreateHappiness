@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Menu;
 import android.view.Surface;
 import android.view.SurfaceHolder;
@@ -47,6 +48,7 @@ public class DiamondGame extends Activity implements Game{
 	    _diamondView = new DiamondView(this, _frameBuffer);
         this.setScreen(new LoadingScreen(this));
 		setContentView(_diamondView);
+		Log.i("THQ", "end diamond game oncreate");
 
 	}
 
