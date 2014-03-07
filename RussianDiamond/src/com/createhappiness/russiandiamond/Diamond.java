@@ -91,6 +91,18 @@ class Player{
             x += 1;
 		return 0;
 	}
+	public int AlwaysRightMove(){
+		while(Asset.alwaysRight){
+			RightMove();
+			try {
+				Thread.sleep(330);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		return 0;
+	}
     public int Transformation(){
 
     	int temp = 0;
@@ -250,9 +262,10 @@ class World implements  View.OnTouchListener{
 		case MotionEvent.ACTION_DOWN:
 			oldX = event.getX();
 			oldY = event.getY();
+			
             break;
 		case MotionEvent.ACTION_MOVE:
-
+            
             break;
 		case MotionEvent.ACTION_UP:
             if(((Math.abs(event.getX() - oldX) * Asset.scaleX < 20) &&
