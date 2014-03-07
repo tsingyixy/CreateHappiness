@@ -32,61 +32,60 @@ public class Diamond {
  * @author tsingyi
  * 正在下落的方块即玩家可以操控的
  */
-class Player{    
+class Player{
+	private static final int SHAPE_TYPE_COUNT = 7;
     private int x;
     private int y;
     private int[][] diamonds;
     private int[][] world;
     private Graphics g;
     public Player(int[][] world,Graphics g){
-    	x = 7;
-    	y= 0;
     	this.world = world;
     	this.g = g;
-    	Random r = new Random();
-    	Init(Math.abs(r.nextInt() % 6));
-    	//Init(1);
+    	
+    	reset();
     }
     public void reset(){
     	x = 7;
     	y= 0;
     	Random r = new Random();
-    	Init(Math.abs(r.nextInt() % 6));
+    	Init(Math.abs(r.nextInt() % SHAPE_TYPE_COUNT));
     	//Init(1);
     }
     private void Init(int shape){
     	switch (shape) {
-		case 0:                    //box
+		case 0://正方形
 	    	diamonds = new int[][]{{1,1},{1,1}};
 			break;
-		case 1:
+		case 1://长条
 			diamonds = new int[][]{{1,1,1,1}};
 			break;
-		case 2:
+		case 2://正Z
 			diamonds = new int[][]{{1,1,0},{0,1,1}};
 			break;
-		case 3:
+		case 3://反Z
+			diamonds = new int[][]{{0,1,1},{1,1,0}};
+			break;
+		case 4://正7
 			diamonds = new int[][]{{1,1},{0,1},{0,1}};
 			break;
-		case 4:
-			diamonds = new int[][]{{1,1,1},{1,0,1}};
+		case 5://反7
+			diamonds = new int[][]{{1,1},{1,0},{1,0}};
 			break;
-		case 5:
+		case 6://T塔
 			diamonds = new int[][]{{0,1,0},{1,1,1}};
 			break;
 		default:
 			break;
 		}
-
-
     }
-	public int LeftMove(){
+	synchronized public int LeftMove(){
         if(CheckOverlap(x, y, diamonds, world, -1))
         	x -=1;
 		return 0;
 		
 	}
-	public int RightMove(){
+	synchronized public int RightMove(){
 		if(CheckOverlap(x, y, diamonds, world, 1))
             x += 1;
 		return 0;
@@ -129,7 +128,7 @@ class Player{
     		{ 
     		    Down();
     		    try {
-					Thread.sleep(33);
+					Thread.sleep(15);
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -197,14 +196,19 @@ class Player{
  * @author tsingyi
  * 整个游戏世界，包括下落的方块和已经落下的方块
  */
-class World implements  View.OnTouchListener{
+class World implements View.OnTouchListener, Runnable{
+
 	private Player player;
 	private int[][] fields;
 	private int sum[];
 	private Graphics graphics;
 	private float oldX;
 	private float oldY;
-
+	private boolean holding = false;
+	private boolean threadworking = false;
+	private boolean downLeft = false;
+	private boolean downfunwork = false;
+	
 	//private boolean isNew;
 	public World(Graphics g,SurfaceView view){ 
 		this.fields= new int[24][16];
@@ -216,27 +220,45 @@ class World implements  View.OnTouchListener{
 		view.setOnTouchListener(this);
 		//isNew = false;
 	}
-	public void update(){ //更新游戏逻辑
-	    if (Asset.frequency == 0)   
-		    {
-	    	player.update();
-	    	for(int j = 0 ; j < fields.length ; ++ j )
-		       {
-		    	   sum[j] = 0;
-		    	   for(int i = 0 ; i < fields[j].length ; ++ i)
-		    	   {
-		    		   sum[j] += fields[j][i];
-		    	   }
-		       }
-		       for(int i = 0 ; i < sum.length; ++ i){
-		    	   if (sum[i] == fields[0].length)
-		    		   for(int j = i ; j >=1 ; j--)
-		    			   fields[j] = fields[j - 1]; 
-		       }
-		    }
-	       
-
+	
+	@Override
+	public void run() {
+		threadworking = true;
+		try {
+			Thread.sleep(50);
+			while (holding) {
+				if (downLeft) {
+					player.LeftMove();
+				} else {
+					player.RightMove();
+				}
+				downfunwork = true;
+				Thread.sleep(100);
+			}
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		threadworking = false;
 	}
+	
+	public void update() { // 更新游戏逻辑
+		if (Asset.frequency == 0) {
+			player.update();
+			for (int j = 0; j < fields.length; ++j) {
+				sum[j] = 0;
+				for (int i = 0; i < fields[j].length; ++i) {
+					sum[j] += fields[j][i];
+				}
+			}
+			for (int i = 0; i < sum.length; ++i) {
+				if (sum[i] == fields[0].length)
+					for (int j = i; j >= 1; j--)
+						fields[j] = fields[j - 1];
+			}
+		}
+	}
+	
 	public void present(){//画图到缓冲区
 		player.present();
 		for (int i = 0; i < fields.length; i++) {
@@ -253,6 +275,7 @@ class World implements  View.OnTouchListener{
 			e.printStackTrace();
 		}
 	}
+	
 	@Override
 	public boolean onTouch(View arg0, MotionEvent event) {
 		// TODO Auto-generated method stub
@@ -260,24 +283,40 @@ class World implements  View.OnTouchListener{
 
 		switch (action) {
 		case MotionEvent.ACTION_DOWN:
+			downfunwork = false;
 			oldX = event.getX();
 			oldY = event.getY();
-			
-            break;
+			downLeft = oldX * Asset.scaleX <= 160;
+			holding = true;
+			if (!threadworking) {
+				new Thread(this).start();
+			}
+			break;
 		case MotionEvent.ACTION_MOVE:
-            
-            break;
+			if (Math.abs(event.getY() - oldY) * Asset.scaleY > 1
+					|| Math.abs(event.getX() - oldX) * Asset.scaleX > 1) {
+				holding = false;
+			}
+			break;
 		case MotionEvent.ACTION_UP:
-            if(((Math.abs(event.getX() - oldX) * Asset.scaleX < 20) &&
-            		(Math.abs(event.getY() - oldY)) * Asset.scaleY < 20) && (oldX * Asset.scaleX <= 160))
-            	player.LeftMove();
-            else if(((Math.abs(event.getX() - oldX) * Asset.scaleX < 20) &&
-            		(Math.abs(event.getY() - oldY)) * Asset.scaleY < 20) && (oldX * Asset.scaleX > 160))
-            	player.RightMove();
-            else if((Math.abs(event.getY() - oldY) * Asset.scaleY > 20) && event.getY() < oldY)
-                player.Transformation();
-            else if((Math.abs(event.getY() - oldY) * Asset.scaleY > 20) && event.getY() > oldY)
-            	player.Accerlate();
+			holding = false;
+			if (!downfunwork) {
+				if (((Math.abs(event.getX() - oldX) * Asset.scaleX < 20) && (Math
+						.abs(event.getY() - oldY)) * Asset.scaleY < 20)
+						&& (oldX * Asset.scaleX <= 160)) {
+					player.LeftMove();
+				} else if (((Math.abs(event.getX() - oldX) * Asset.scaleX < 20) && (Math
+						.abs(event.getY() - oldY)) * Asset.scaleY < 20)
+						&& (oldX * Asset.scaleX > 160)) {
+					player.RightMove();
+				} else if ((Math.abs(event.getY() - oldY) * Asset.scaleY > 20)
+						&& event.getY() < oldY) {
+					player.Transformation();
+				} else if ((Math.abs(event.getY() - oldY) * Asset.scaleY > 20)
+						&& event.getY() > oldY) {
+					player.Accerlate();
+				}
+			}
 			break;
 		default:
 			break;
