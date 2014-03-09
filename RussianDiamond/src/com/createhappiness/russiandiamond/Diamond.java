@@ -118,7 +118,7 @@ class Player{
 
     	int temp = 0;
     	int len = diamonds.length - 1;
-    	if(x + len < world[0].length)
+    	if(CheckOverlap(x, y, diamonds, world, 2))
     	{
     		int[][] _diamond = new int[diamonds[0].length][diamonds.length];
             for(int i = 0 ; i < diamonds.length ;++ i)
@@ -187,6 +187,23 @@ class Player{
         			}
         			
         		return true;
+        }
+        if(direction == 2){
+        	int wid = diamonds.length;
+        	//int height = diamonds[0].length;
+        	if(x+wid>world[0].length)
+        		return false;
+        	if (CheckOverlap(x-1, y, diamonds, world, 1)){
+        		for(int i = 0 ; i < diamonds.length ; ++ i)        
+             		for(int j = 0 ; j < diamonds[i].length ; ++j)
+            			{
+             			 if(y - j >= 0 && (diamonds[i][j] + world[y-j][x+i] == 2))
+             				 return false;
+            			}
+        		return true;
+        	}
+        		
+        	
         }
 		//}
         return true;

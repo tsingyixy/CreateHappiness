@@ -31,7 +31,7 @@ public class DiamondView extends SurfaceView implements Callback {
 		_holder.addCallback(this);
         
 		//Rect = 
-		_render = new RenderingThread(_holder);
+
 		Log.i("THQ", "end of DiamondView constructer");
 	}
 
@@ -50,32 +50,20 @@ public class DiamondView extends SurfaceView implements Callback {
 		// TODO Auto-generated method stub
 		
 	}
-	public void DrawLoading(){       //在加载所有资源之前绘制Loading画面，然后其他资源在后台逐渐加载
-		Log.i("THQ", "Draw Loading");
-		Canvas canvas = _holder.lockCanvas();
-		canvas.drawColor(Color.WHITE);
-		canvas.drawBitmap(Asset.loadingImage, null,canvas.getClipBounds(),null);
-		_holder.unlockCanvasAndPost(canvas);
-		try {
-			Thread.sleep(2000);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
 	@Override
 
 	public void surfaceCreated(SurfaceHolder arg0) {
 		// TODO Auto-generated method stub
        // DrawLoading();
-		this._render.runing = true;
-		this._render.start();
+//		this._render.runing = true;
+//		this._render.start();
+		//resume();
 	}
 
 	@Override
 	public void surfaceDestroyed(SurfaceHolder arg0) {
 		// TODO Auto-generated method stub
-		this._render.runing = false;
+//		this._render.runing = false;
 		
 	}
 	
@@ -93,24 +81,31 @@ public class DiamondView extends SurfaceView implements Callback {
 		 */
 		@Override
 		public void run() {
+			Log.i("THQ", "begin update");
 			// TODO Auto-generated method stub
 			while(runing){
+				if(!_holder.getSurface().isValid())
+					continue;
 				synchronized (_holder) {
+					Log.i("THQ", "begin paint");
 					Canvas canvas = _holder.lockCanvas();
-					
+					Log.i("THQ", canvas==null?"null":"not null");
 					_game.GetCurrentScreen().update();
 					_game.GetCurrentScreen().present();
 					canvas.drawBitmap(_frameBuffer, null, canvas.getClipBounds(), null);
+					Log.i("THQ", "paint");
 					_holder.unlockCanvasAndPost(canvas);
+					Log.i("THQ", "unlock");
 					if(Asset.isLoading)
 						try {
-							Thread.sleep(5000);
+							Thread.sleep(2000);
 							Asset.isLoading = false;
 						} catch (InterruptedException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
 				}
+				Log.i("THQ", "one time end");
 			}
 		}
 		
@@ -118,10 +113,25 @@ public class DiamondView extends SurfaceView implements Callback {
 
 	public void resume() {
 		// TODO Auto-generated method stub
-		_render.runing = true;
+			_render = new RenderingThread(_holder);
+			_render.runing = true;
+			_render.start();
+
+
 	}
 	public void pause(){
+		Log.i("THQ", "Paused");
 		_render.runing = false;
+		while(true)
+		{
+			try {
+				_render.join();
+				break;
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 	}
 
 }
