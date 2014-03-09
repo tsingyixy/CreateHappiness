@@ -81,32 +81,32 @@ class Player{
 		}
     }
 	synchronized public int LeftMove(){
-		synchronized (Asset.lock) {
+
             if(CheckOverlap(x, y, diamonds, world, -1))
         	    x -=1;
-		}
+
 		return 0;
 		
 	}
 	synchronized public int RightMove(){
-		synchronized (Asset.lock) {
+
 		    if(CheckOverlap(x, y, diamonds, world, 1))
                 x += 1;
-		}
+
 		return 0;
 	}
-	public int AlwaysRightMove(){
-		while(Asset.alwaysRight){
-			RightMove();
-			try {
-				Thread.sleep(330);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-		return 0;
-	}
+//	public int AlwaysRightMove(){
+//		while(Asset.alwaysRight){
+//			RightMove();
+//			try {
+//				Thread.sleep(330);
+//			} catch (InterruptedException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//		}
+//		return 0;
+//	}
     public int Transformation(){
 
     	int temp = 0;
@@ -143,15 +143,15 @@ class Player{
     	//Asset.nextTime = false;
     	return 0;
     }
-    public boolean CheckOverlap(int x, int y,int[][] diamonds,int[][] world,int direction){//检查能否移动
-
+    public synchronized boolean CheckOverlap(int x, int y,int[][] diamonds,int[][] world,int direction){//检查能否移动
+		//synchronized (Asset.lock) {
         if(direction == -1){        //向左
         	if(x - 1 < 0)           //超出边界不能移动
         		return false;
         	for(int i = 0 ; i < diamonds.length ; ++ i)         //左边已经有了方块不能移动
         		for(int j = 0 ; j < diamonds[i].length ; ++ j)
         			{
-        			    if(y-diamonds.length+i +1 >= 0 && (diamonds[i][j] + world[y-(diamonds.length -1 )+i][x-1+j] == 2))
+        			    if(y-diamonds.length+i +1 >= 0 && (diamonds[i][j] + world[y+i][x-1+j] == 2))
         			    	return false;
         			} 				
         	return true;
@@ -172,16 +172,17 @@ class Player{
         	for(int i = 0 ; i < diamonds.length ; ++ i)         //下边已经有了方块不能移动
          		for(int j = 0 ; j < diamonds[i].length ; ++j)
         			{
-         			    if(y+1-diamonds.length+i >=0 && diamonds[i][j] + world[y+1-diamonds.length+i][x+j+1] == 2)
-         			   	return false;
+         			    if(y+1-diamonds.length+i >=0 && diamonds[i][j] + world[y+i][x+j+1] == 2)
+         			   	    return false;
         			}
         			
         		return true;
         }
+		//}
         return true;
     }
     public int Down(){
-		synchronized (Asset.lock) {
+
             if(CheckOverlap(x, y, diamonds, world, 0))
         	    y ++;
             else{
@@ -191,7 +192,7 @@ class Player{
             	    }
                reset();
             }
-		}
+
         return 0;
     }
     public void update(){
