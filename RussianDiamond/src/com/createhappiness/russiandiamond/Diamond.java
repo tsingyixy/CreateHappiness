@@ -46,6 +46,7 @@ class Player{
     	reset();
     }
     public void reset(){
+    	Asset.nextTime = true;
     	x = 7;
     	y= 0;
     	Random r = new Random();
@@ -80,14 +81,18 @@ class Player{
 		}
     }
 	synchronized public int LeftMove(){
-        if(CheckOverlap(x, y, diamonds, world, -1))
-        	x -=1;
+		synchronized (Asset.lock) {
+            if(CheckOverlap(x, y, diamonds, world, -1))
+        	    x -=1;
+		}
 		return 0;
 		
 	}
 	synchronized public int RightMove(){
-		if(CheckOverlap(x, y, diamonds, world, 1))
-            x += 1;
+		synchronized (Asset.lock) {
+		    if(CheckOverlap(x, y, diamonds, world, 1))
+                x += 1;
+		}
 		return 0;
 	}
 	public int AlwaysRightMove(){
@@ -124,6 +129,7 @@ class Player{
     	return 0;
     }
     public int Accerlate(){           //丢下该方块
+    	if(!Asset.nextTime)
     	while(CheckOverlap(x, y, diamonds, world, 0))
     		{ 
     		    Down();
@@ -134,6 +140,7 @@ class Player{
 					e.printStackTrace();
 				}
     		}
+    	//Asset.nextTime = false;
     	return 0;
     }
     public boolean CheckOverlap(int x, int y,int[][] diamonds,int[][] world,int direction){//检查能否移动
@@ -143,8 +150,10 @@ class Player{
         		return false;
         	for(int i = 0 ; i < diamonds.length ; ++ i)         //左边已经有了方块不能移动
         		for(int j = 0 ; j < diamonds[i].length ; ++ j)
-        			if(y-diamonds.length+i +1 >= 0 && (diamonds[i][j] + world[y-(diamonds.length -1 )+i][x-1+j] == 2))
-        				return false;
+        			{
+        			    if(y-diamonds.length+i +1 >= 0 && (diamonds[i][j] + world[y-(diamonds.length -1 )+i][x-1+j] == 2))
+        			    	return false;
+        			} 				
         	return true;
         }
         if(direction == 0){             //向下
@@ -161,23 +170,28 @@ class Player{
         	if(x + diamonds[0].length > world[0].length - 1)//超出右边不能移动
         		return false;
         	for(int i = 0 ; i < diamonds.length ; ++ i)         //下边已经有了方块不能移动
-        		for(int j = 0 ; j < diamonds[i].length ; ++j)
-        			if(y+1-diamonds.length+i >=0 && diamonds[i][j] + world[y+1-diamonds.length+i][x+j+1] == 2)
-        				return false;
+         		for(int j = 0 ; j < diamonds[i].length ; ++j)
+        			{
+         			    if(y+1-diamonds.length+i >=0 && diamonds[i][j] + world[y+1-diamonds.length+i][x+j+1] == 2)
+         			   	return false;
+        			}
+        			
         		return true;
         }
         return true;
     }
     public int Down(){
-        if(CheckOverlap(x, y, diamonds, world, 0))
-        	y ++;
-        else{
-            for(int i = 0 ; i < diamonds.length ;++ i)
-            	for(int j = 0 ; j < diamonds[i].length ; ++ j){
-            		world[y-i][x + j] |= diamonds[i][j];
-            	}
-            reset();
-        }
+		synchronized (Asset.lock) {
+            if(CheckOverlap(x, y, diamonds, world, 0))
+        	    y ++;
+            else{
+                for(int i = 0 ; i < diamonds.length ;++ i)
+                	for(int j = 0 ; j < diamonds[i].length ; ++ j){
+            	    	world[y-i][x + j] |= diamonds[i][j];
+            	    }
+               reset();
+            }
+		}
         return 0;
     }
     public void update(){
@@ -196,7 +210,7 @@ class Player{
  * @author tsingyi
  * 整个游戏世界，包括下落的方块和已经落下的方块
  */
-class World implements View.OnTouchListener, Runnable{
+class World implements View.OnTouchListener{
 
 	private Player player;
 	private int[][] fields;
@@ -204,10 +218,8 @@ class World implements View.OnTouchListener, Runnable{
 	private Graphics graphics;
 	private float oldX;
 	private float oldY;
-	private boolean holding = false;
-	private boolean threadworking = false;
-	private boolean downLeft = false;
-	private boolean downfunwork = false;
+	private boolean pressDown;
+//	private boolean glide;
 	
 	//private boolean isNew;
 	public World(Graphics g,SurfaceView view){ 
@@ -217,30 +229,12 @@ class World implements View.OnTouchListener, Runnable{
 		this.graphics = g;
 		oldX = 0;
 		oldY = 0;
+		pressDown = false;
+//		glide = false;
 		view.setOnTouchListener(this);
 		//isNew = false;
 	}
 	
-	@Override
-	public void run() {
-		threadworking = true;
-		try {
-			Thread.sleep(50);
-			while (holding) {
-				if (downLeft) {
-					player.LeftMove();
-				} else {
-					player.RightMove();
-				}
-				downfunwork = true;
-				Thread.sleep(100);
-			}
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		threadworking = false;
-	}
 	
 	public void update() { // 更新游戏逻辑
 		if (Asset.frequency == 0) {
@@ -275,32 +269,64 @@ class World implements View.OnTouchListener, Runnable{
 			e.printStackTrace();
 		}
 	}
-	
 	@Override
 	public boolean onTouch(View arg0, MotionEvent event) {
 		// TODO Auto-generated method stub
 		int action = event.getAction();
-
+		if(Asset.nextTime)               //新出一个形状的时候如果上次按住不放，在这里重置控制条件
+		{
+			pressDown = false;
+//			glide = false;
+		}
+		if(pressDown)
+			TimeLine.Finish(System.currentTimeMillis());
+        if(pressDown && TimeLine.Interval() > 600)
+        	{
+        	    if(oldX * Asset.scaleX <= 160)
+        	    	player.LeftMove();
+        	    else
+        		    player.RightMove();
+        	    try {
+					Thread.sleep(100);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+        	}
+//        if(glide){
+//        	player.Down();
+//        	try {
+//				Thread.sleep(100);
+//			} catch (InterruptedException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//        }
 		switch (action) {
 		case MotionEvent.ACTION_DOWN:
-			downfunwork = false;
 			oldX = event.getX();
 			oldY = event.getY();
-			downLeft = oldX * Asset.scaleX <= 160;
-			holding = true;
-			if (!threadworking) {
-				new Thread(this).start();
+			if(!pressDown)
+			{
+				pressDown = true;
+				TimeLine.Begin(System.currentTimeMillis());
 			}
+
 			break;
 		case MotionEvent.ACTION_MOVE:
-			if (Math.abs(event.getY() - oldY) * Asset.scaleY > 1
-					|| Math.abs(event.getX() - oldX) * Asset.scaleX > 1) {
-				holding = false;
-			}
+			if ((Math.abs(event.getX() - oldX) * Asset.scaleX > 20) || (Math
+					.abs(event.getY() - oldY)) * Asset.scaleY > 20)
+			    {
+				    pressDown = false;
+//				    if(event.getY() > oldY)
+//				        glide = true;
+			    }
+
 			break;
 		case MotionEvent.ACTION_UP:
-			holding = false;
-			if (!downfunwork) {
+			Asset.nextTime = false;
+			pressDown = false;
+//			glide = false;
 				if (((Math.abs(event.getX() - oldX) * Asset.scaleX < 20) && (Math
 						.abs(event.getY() - oldY)) * Asset.scaleY < 20)
 						&& (oldX * Asset.scaleX <= 160)) {
@@ -312,11 +338,13 @@ class World implements View.OnTouchListener, Runnable{
 				} else if ((Math.abs(event.getY() - oldY) * Asset.scaleY > 20)
 						&& event.getY() < oldY) {
 					player.Transformation();
-				} else if ((Math.abs(event.getY() - oldY) * Asset.scaleY > 20)
+				}
+				else if ((Math.abs(event.getY() - oldY) * Asset.scaleY > 20)
 						&& event.getY() > oldY) {
+
 					player.Accerlate();
 				}
-			}
+			
 			break;
 		default:
 			break;

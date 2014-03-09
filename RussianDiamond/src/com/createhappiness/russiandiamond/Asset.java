@@ -17,17 +17,19 @@ public class Asset {
       public static int frequency ;
       public static boolean alwaysRight;
       public static boolean alwayLeft;
+      public static Object lock = new Object();
+      public static boolean nextTime = false;
 }
 class TimeLine{
-	private static int _start;
-	private static int _end;
-	public static void Begin(int start){
-		_start = start;
+	private static long _start = 0;
+	private static long _end = 0;
+	public static void Begin(long l){
+		_start = l;
 	}
-	public static void Finish(int end){
+	public static void Finish(long end){
 		_end = end;
 	}
-	public static int Interval(){
+	public static long Interval(){
 		return _end - _start;
 	}
 }
