@@ -27,27 +27,32 @@ public class DiamondGame extends Activity implements Game{
     private Screen currentScreen;
     private Bitmap _frameBuffer;
     private DiamondView _diamondView;
+    public DiamondGame(){
+    	super();
+
+         status = 0;
+
+
+    }
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
+   	    requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        status = 0;
-        int frameWidth = 320;
-        int frameHeigth = 480; 
         DisplayMetrics metric = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(metric);
         int width = metric.widthPixels;
         int height = metric.heightPixels;
+        int frameWidth = 320;
+        int frameHeigth = 480; 
         Asset.scaleX = (float)frameWidth / width;
         Asset.scaleY = (float)frameHeigth / height;
         _frameBuffer = Bitmap.createBitmap(frameWidth, frameHeigth, Bitmap.Config.ARGB_4444);
         graphics = new Graphics(this.getAssets(), _frameBuffer);
-		Asset.loadingImage = graphics.CreateImage("Loading.png");
 	    _diamondView = new DiamondView(this, _frameBuffer);
-        this.setScreen(new LoadingScreen(this));
 		setContentView(_diamondView);
+		this.setScreen(new LoadingScreen(this));
 		Log.i("THQ", "end diamond game oncreate");
 
 	}

@@ -29,6 +29,7 @@ public class DiamondView extends SurfaceView implements Callback {
 		this._game = (Game)context;
 		this._holder = getHolder();
 		_holder.addCallback(this);
+        
 		//Rect = 
 		_render = new RenderingThread(_holder);
 		Log.i("THQ", "end of DiamondView constructer");
@@ -55,12 +56,18 @@ public class DiamondView extends SurfaceView implements Callback {
 		canvas.drawColor(Color.WHITE);
 		canvas.drawBitmap(Asset.loadingImage, null,canvas.getClipBounds(),null);
 		_holder.unlockCanvasAndPost(canvas);
+		try {
+			Thread.sleep(2000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	@Override
 
 	public void surfaceCreated(SurfaceHolder arg0) {
 		// TODO Auto-generated method stub
-        DrawLoading();
+       // DrawLoading();
 		this._render.runing = true;
 		this._render.start();
 	}
@@ -90,10 +97,19 @@ public class DiamondView extends SurfaceView implements Callback {
 			while(runing){
 				synchronized (_holder) {
 					Canvas canvas = _holder.lockCanvas();
+					
 					_game.GetCurrentScreen().update();
 					_game.GetCurrentScreen().present();
 					canvas.drawBitmap(_frameBuffer, null, canvas.getClipBounds(), null);
 					_holder.unlockCanvasAndPost(canvas);
+					if(Asset.isLoading)
+						try {
+							Thread.sleep(5000);
+							Asset.isLoading = false;
+						} catch (InterruptedException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
 				}
 			}
 		}

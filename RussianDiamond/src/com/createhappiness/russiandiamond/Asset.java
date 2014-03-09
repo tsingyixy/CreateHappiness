@@ -12,13 +12,15 @@ public class Asset {
       public static Bitmap bgImage ;
       public static Bitmap diamondImage;
       public static Bitmap playerImage;
+      public static Bitmap endingImage;
       public static float scaleX;
       public static float scaleY;
       public static int frequency ;
       public static boolean alwaysRight;
       public static boolean alwayLeft;
       public static Object lock = new Object();
-      public static boolean nextTime = false;
+      public static boolean nextTime;
+      public static boolean isLoading;
 }
 class TimeLine{
 	private static long _start = 0;

@@ -1,6 +1,8 @@
 package com.createhappiness.russiandiamond;
 
 import java.util.Random;
+
+import android.util.Log;
 import android.view.*;
 /**
  * 
@@ -38,17 +40,22 @@ class Player{
     private int y;
     private int[][] diamonds;
     private int[][] world;
+//    private boolean isAccerlate;
     private Graphics g;
     public Player(int[][] world,Graphics g){
     	this.world = world;
     	this.g = g;
-    	
-    	reset();
+    	x = 7;
+    	y= 0;
+//    	isAccerlate = false;
+    	Random r = new Random();
+    	Init(Math.abs(r.nextInt() % SHAPE_TYPE_COUNT));
     }
     public void reset(){
     	Asset.nextTime = true;
     	x = 7;
     	y= 0;
+//    	isAccerlate = false;
     	Random r = new Random();
     	Init(Math.abs(r.nextInt() % SHAPE_TYPE_COUNT));
     	//Init(1);
@@ -129,8 +136,9 @@ class Player{
     	return 0;
     }
     public int Accerlate(){           //丢下该方块
-    	if(!Asset.nextTime)
-    	while(CheckOverlap(x, y, diamonds, world, 0))
+//    	isAccerlate = true;
+    	if(!Asset.nextTime){
+    		while(CheckOverlap(x, y, diamonds, world, 0))
     		{ 
     		    Down();
     		    try {
@@ -140,7 +148,9 @@ class Player{
 					e.printStackTrace();
 				}
     		}
-    	//Asset.nextTime = false;
+    		
+    	}
+//    	isAccerlate = false;
     	return 0;
     }
     public synchronized boolean CheckOverlap(int x, int y,int[][] diamonds,int[][] world,int direction){//检查能否移动
@@ -151,7 +161,7 @@ class Player{
         	for(int i = 0 ; i < diamonds.length ; ++ i)         //左边已经有了方块不能移动
         		for(int j = 0 ; j < diamonds[i].length ; ++ j)
         			{
-        			    if(y-diamonds.length+i +1 >= 0 && (diamonds[i][j] + world[y+i][x-1+j] == 2))
+        			    if(y-i >= 0 && (diamonds[i][j] + world[y-i][x-1+j] == 2))
         			    	return false;
         			} 				
         	return true;
@@ -172,7 +182,7 @@ class Player{
         	for(int i = 0 ; i < diamonds.length ; ++ i)         //下边已经有了方块不能移动
          		for(int j = 0 ; j < diamonds[i].length ; ++j)
         			{
-         			    if(y+1-diamonds.length+i >=0 && diamonds[i][j] + world[y+i][x+j+1] == 2)
+         			    if(y-i >=0 && diamonds[i][j] + world[y-i][x+j+1] == 2)
          			   	    return false;
         			}
         			
@@ -181,11 +191,13 @@ class Player{
 		//}
         return true;
     }
-    public int Down(){
+    synchronized public int Down(){
 
             if(CheckOverlap(x, y, diamonds, world, 0))
         	    y ++;
             else{
+            	if(y - diamonds.length<0)
+            		return -1;
                 for(int i = 0 ; i < diamonds.length ;++ i)
                 	for(int j = 0 ; j < diamonds[i].length ; ++ j){
             	    	world[y-i][x + j] |= diamonds[i][j];
@@ -195,8 +207,9 @@ class Player{
 
         return 0;
     }
-    public void update(){
-    	Down();
+    public int update(){
+//    	if(!isAccerlate)
+    	return Down();
     }
     public void present(){
         for(int i = 0 ; i < diamonds.length ;++ i)
@@ -231,15 +244,19 @@ class World implements View.OnTouchListener{
 		oldX = 0;
 		oldY = 0;
 		pressDown = false;
+		Asset.nextTime = false;
+		Log.i("THQ", Asset.nextTime==true?"true":"false");
 //		glide = false;
 		view.setOnTouchListener(this);
 		//isNew = false;
 	}
 	
 	
-	public void update() { // 更新游戏逻辑
+	public int update() { // 更新游戏逻辑
+		//Log.i("THQ", Asset.nextTime==true?"true":"false");
 		if (Asset.frequency == 0) {
-			player.update();
+			if(player.update() == -1)
+				return -1;
 			for (int j = 0; j < fields.length; ++j) {
 				sum[j] = 0;
 				for (int i = 0; i < fields[j].length; ++i) {
@@ -252,6 +269,7 @@ class World implements View.OnTouchListener{
 						fields[j] = fields[j - 1];
 			}
 		}
+		return 0;
 	}
 	
 	public void present(){//画图到缓冲区
@@ -325,8 +343,8 @@ class World implements View.OnTouchListener{
 
 			break;
 		case MotionEvent.ACTION_UP:
-			Asset.nextTime = false;
 			pressDown = false;
+			Asset.nextTime = false;
 //			glide = false;
 				if (((Math.abs(event.getX() - oldX) * Asset.scaleX < 20) && (Math
 						.abs(event.getY() - oldY)) * Asset.scaleY < 20)
@@ -342,10 +360,9 @@ class World implements View.OnTouchListener{
 				}
 				else if ((Math.abs(event.getY() - oldY) * Asset.scaleY > 20)
 						&& event.getY() > oldY) {
-
 					player.Accerlate();
 				}
-			
+				Asset.nextTime = false;
 			break;
 		default:
 			break;

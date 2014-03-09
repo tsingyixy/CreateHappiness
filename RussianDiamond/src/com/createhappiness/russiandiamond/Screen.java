@@ -1,6 +1,9 @@
 package com.createhappiness.russiandiamond;
 
+import android.graphics.Canvas;
 import android.graphics.Rect;
+import android.view.Surface;
+import android.view.SurfaceHolder;
 /**
  * 在缓冲区绘制的游戏中的每一帧
  * @author tsingyi
@@ -29,26 +32,23 @@ class LoadingScreen extends Screen{
 	public static Rect screen;
 	public LoadingScreen(Game game){
 		super(game);	
- 
 	}
 	public int update(){            
 		this.g = game.getGraphics();
 		//Asset.bgImage = g.CreateImage("bgIamge path");
 		Asset.diamondImage = g.CreateImage("blue_diamond.png");
-
+		Asset.loadingImage = g.CreateImage("Loading.png");
 		//Asset.mainImage = g.CreateImage("bgImage path");
 		Asset.playerImage = g.CreateImage("red_diamond.png");
-		Asset.frequency = 0;
-		game.setScreen(new MainScreen(game));
-
-		
+		Asset.endingImage = g.CreateImage("ending.png");
+		Asset.frequency = 0;	
+		Asset.isLoading = true;
 		return 0;
 	}
 	public int present(){
-		//g.DrawImage(Asset.loadingImage, 0,0);
-		//Asset.playerImage = g.CreateImage("red_diamond.png");
-		//Asset.diamondImage = g.CreateImage("blue_diamond.png");
-
+		game.getGraphics().Clear();
+		game.getGraphics().DrawImage(Asset.loadingImage, 0, 0);
+		game.setScreen(new MainScreen(game));
 		return 0;
 	}
 }
@@ -68,7 +68,8 @@ class GameScreen extends Screen{
 		this.world = w;
 	}
 	public int update(){
-		world.update();
+		if(world.update() == -1)
+			game.setScreen(new EndScreen(game));
 		return 0;
 	}
 	public int present(){
@@ -80,5 +81,13 @@ class GameScreen extends Screen{
 class EndScreen extends Screen{
 	public EndScreen(Game game){
 		super(game);
+	}
+	public int update(){
+		return 0;
+	}
+	public int present(){
+		game.getGraphics().Clear();
+		game.getGraphics().DrawImage(Asset.endingImage, 0, 0);
+		return 0;
 	}
 }
