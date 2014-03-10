@@ -197,7 +197,7 @@ class Player{
         		for(int i = 0 ; i < diamonds.length ; ++ i)        
              		for(int j = 0 ; j < diamonds[i].length ; ++j)
             			{
-             			 if(y - j >= 0 && (diamonds[i][j] + world[y-j][x+i] == 2))
+             			 if(y - j >= 0 && (diamonds[diamonds.length-1-i][j] + world[y-j][x+i] == 2))
              				 return false;
             			}
         		return true;
@@ -340,6 +340,7 @@ class World implements View.OnTouchListener{
 //        }
 		switch (action) {
 		case MotionEvent.ACTION_DOWN:
+			Asset.nextTime = false;
 			oldX = event.getX();
 			oldY = event.getY();
 			if(!pressDown)
@@ -379,7 +380,7 @@ class World implements View.OnTouchListener{
 						&& event.getY() > oldY) {
 					player.Accerlate();
 				}
-				Asset.nextTime = false;
+				//Asset.nextTime = false;
 			break;
 		default:
 			break;
