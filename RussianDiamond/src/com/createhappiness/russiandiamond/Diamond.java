@@ -9,25 +9,7 @@ import android.view.*;
  * @author tsingyi
  *方块类，具有坐标和方向属性
  */
-public class Diamond {
-	//public static Pool<Diamond> pool = new Pool<Diamond>();
-    public int x;
-    public int y;
-	public Diamond() {
-		 this.x = 0;
-		 this.y = 0;
-	//	 pool.push(this);
-
-	}
-	public void SetPosition(int x ,int y){
-		this.x = x;
-		this.y = y;
-	}
-    public Diamond(int x,int y){
-        this.x = x;
-        this.y = y;
-       // pool.push(this);
-    }
+public class Diamond {          //废弃，方块直接用坐标表示
 }
 /**
  * 
@@ -51,7 +33,8 @@ class Player{
     	Random r = new Random();
     	Init(Math.abs(r.nextInt() % SHAPE_TYPE_COUNT));
     }
-    public void reset(){
+  //当方块落下之后不用重新新建一个对象，直接重置当前对象的坐标和形状即可，并设定nextTime = true;
+    public void reset(){            
     	Asset.nextTime = true;
     	x = 7;
     	y= 0;
@@ -87,6 +70,7 @@ class Player{
 			break;
 		}
     }
+    //左移
 	synchronized public int LeftMove(){
 
             if(CheckOverlap(x, y, diamonds, world, -1))
@@ -95,6 +79,7 @@ class Player{
 		return 0;
 		
 	}
+	//右移
 	synchronized public int RightMove(){
 
 		    if(CheckOverlap(x, y, diamonds, world, 1))
@@ -102,42 +87,31 @@ class Player{
 
 		return 0;
 	}
-//	public int AlwaysRightMove(){
-//		while(Asset.alwaysRight){
-//			RightMove();
-//			try {
-//				Thread.sleep(330);
-//			} catch (InterruptedException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-//		}
-//		return 0;
-//	}
+	//变形
     public int Transformation(){
 
     	int temp = 0;
     	int len = diamonds.length - 1;
-    	if(CheckOverlap(x, y, diamonds, world, 2))
+    	if(CheckOverlap(x, y, diamonds, world, 2))     //检测当前是否允许变形
     	{
     		int[][] _diamond = new int[diamonds[0].length][diamonds.length];
-            for(int i = 0 ; i < diamonds.length ;++ i)
-            	for(int j = 0 ; j < diamonds[i].length ; ++ j){
+            for(int i = 0 ; i < diamonds.length ;++ i)            //矩阵转置
+            	for(int j = 0 ; j < diamonds[i].length ; ++ j){ 
             		_diamond[j][i] = diamonds[i][j];
             	} 
-            for(int i = 0 ; i < _diamond.length ;++ i)
+            for(int i = 0 ; i < _diamond.length ;++ i)           //左右元素对调
             	for(int j = 0 ; j < _diamond[i].length / 2 ; ++ j){
             		temp = _diamond[i][j];
             		_diamond[i][j] = _diamond[i][len -j];
             		_diamond[i][len -j] = temp;
             	}
-            diamonds = _diamond;
+            diamonds = _diamond;       //旋转结束
     	}
     	return 0;
     }
     public int Accerlate(){           //丢下该方块
 //    	isAccerlate = true;
-    	if(!Asset.nextTime){
+    	if(!Asset.nextTime){           //有待确认是否需要
     		while(CheckOverlap(x, y, diamonds, world, 0))
     		{ 
     		    Down();
@@ -188,12 +162,12 @@ class Player{
         			
         		return true;
         }
-        if(direction == 2){
+        if(direction == 2){         //检测能否变形，主要检测上边和右边是否重叠
         	int wid = diamonds.length;
         	//int height = diamonds[0].length;
         	if(x+wid>world[0].length)
         		return false;
-        	if (CheckOverlap(x-1, y, diamonds, world, 1)){
+        	if (CheckOverlap(x-1, y, diamonds, world, 1)){//如果右边允许，接着判断上边是否允许
         		for(int i = 0 ; i < diamonds.length ; ++ i)        
              		for(int j = 0 ; j < diamonds[i].length ; ++j)
             			{
@@ -208,7 +182,7 @@ class Player{
 		//}
         return true;
     }
-    synchronized public int Down(){
+    synchronized public int Down(){ //下落，如果不能继续下落，则更新world数组并重新开始下一个方块
 
             if(CheckOverlap(x, y, diamonds, world, 0))
         	    y ++;
@@ -219,16 +193,16 @@ class Player{
                 	for(int j = 0 ; j < diamonds[i].length ; ++ j){
             	    	world[y-i][x + j] |= diamonds[i][j];
             	    }
-               reset();
+               reset();//重置方块的属性
             }
 
         return 0;
     }
-    public int update(){
+    public int update(){          //更新逻辑即下降一格
 //    	if(!isAccerlate)
     	return Down();
     }
-    public void present(){
+    public void present(){         //更新画面，画出下落的方块在屏幕上的位置
         for(int i = 0 ; i < diamonds.length ;++ i)
         	for(int j = 0 ; j < diamonds[i].length ; ++ j){
         		if(diamonds[i][j] == 1)
@@ -298,8 +272,8 @@ class World implements View.OnTouchListener{
 			}
 		}
 	   try {
-			Thread.sleep(33);
-			Asset.frequency = (Asset.frequency+1) % 10;
+			Thread.sleep(33);       //  30帧/s更新屏幕
+			Asset.frequency = (Asset.frequency+1) % 10; //300ms下落一格
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -314,16 +288,16 @@ class World implements View.OnTouchListener{
 			pressDown = false;
 //			glide = false;
 		}
-		if(pressDown)
+		if(pressDown)           //如果已经按着了，计算按下的时间
 			TimeLine.Finish(System.currentTimeMillis());
-        if(pressDown && TimeLine.Interval() > 600)
+        if(pressDown && TimeLine.Interval() > 600)//如果按下的时间超过600ms则开始持续左移或者右移
         	{
         	    if(oldX * Asset.scaleX <= 160)
         	    	player.LeftMove();
         	    else
         		    player.RightMove();
         	    try {
-					Thread.sleep(100);
+					Thread.sleep(100); //按住情况下连续移动间隔100ms
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -339,18 +313,18 @@ class World implements View.OnTouchListener{
 //			}
 //        }
 		switch (action) {
-		case MotionEvent.ACTION_DOWN:
+		case MotionEvent.ACTION_DOWN:            //按下的时候记录按的位置
 			Asset.nextTime = false;
 			oldX = event.getX();
 			oldY = event.getY();
-			if(!pressDown)
+			if(!pressDown)                  //标记按下，并开始计时
 			{
 				pressDown = true;
 				TimeLine.Begin(System.currentTimeMillis());
 			}
 
 			break;
-		case MotionEvent.ACTION_MOVE:
+		case MotionEvent.ACTION_MOVE:           //如果按下的情况下移动距离超过特定值则记为移动
 			if ((Math.abs(event.getX() - oldX) * Asset.scaleX > 20) || (Math
 					.abs(event.getY() - oldY)) * Asset.scaleY > 20)
 			    {
@@ -367,17 +341,17 @@ class World implements View.OnTouchListener{
 				if (((Math.abs(event.getX() - oldX) * Asset.scaleX < 20) && (Math
 						.abs(event.getY() - oldY)) * Asset.scaleY < 20)
 						&& (oldX * Asset.scaleX <= 160)) {
-					player.LeftMove();
+					player.LeftMove();                        //点左边左移
 				} else if (((Math.abs(event.getX() - oldX) * Asset.scaleX < 20) && (Math
 						.abs(event.getY() - oldY)) * Asset.scaleY < 20)
-						&& (oldX * Asset.scaleX > 160)) {
+						&& (oldX * Asset.scaleX > 160)) {        //点右边右移
 					player.RightMove();
 				} else if ((Math.abs(event.getY() - oldY) * Asset.scaleY > 20)
-						&& event.getY() < oldY) {
+						&& event.getY() < oldY) {         //向上滑动变形
 					player.Transformation();
 				}
 				else if ((Math.abs(event.getY() - oldY) * Asset.scaleY > 20)
-						&& event.getY() > oldY) {
+						&& event.getY() > oldY) {            //向下滑动加速下落直至丢下该方块
 					player.Accerlate();
 				}
 				//Asset.nextTime = false;

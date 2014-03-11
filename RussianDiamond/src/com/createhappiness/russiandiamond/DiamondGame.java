@@ -44,16 +44,16 @@ public class DiamondGame extends Activity implements Game{
         getWindowManager().getDefaultDisplay().getMetrics(metric);
         int width = metric.widthPixels;
         int height = metric.heightPixels;
-        int frameWidth = 320;
+        int frameWidth = 320;              //默认屏幕分辨率320x480
         int frameHeigth = 480; 
-        Asset.scaleX = (float)frameWidth / width;
+        Asset.scaleX = (float)frameWidth / width;          //默认分辨率和实际分辨率之比
         Asset.scaleY = (float)frameHeigth / height;
-        _frameBuffer = Bitmap.createBitmap(frameWidth, frameHeigth, Bitmap.Config.ARGB_4444);
+        _frameBuffer = Bitmap.createBitmap(frameWidth, frameHeigth, Bitmap.Config.ARGB_4444);//创建缓冲区
         graphics = new Graphics(this.getAssets(), _frameBuffer);
 	    _diamondView = new DiamondView(this, _frameBuffer);
 		setContentView(_diamondView);
 		this.setScreen(new LoadingScreen(this));
-		Log.i("THQ", "end diamond game oncreate");
+//		Log.i("THQ", "end diamond game oncreate");
 
 	}
 
@@ -62,7 +62,7 @@ public class DiamondGame extends Activity implements Game{
 		// TODO Auto-generated method stub
 		super.onPause();
 	//	wakeLock.release();
-
+//游戏暂停
 		currentScreen.pause();
 		_diamondView.pause();
 		
@@ -71,6 +71,7 @@ public class DiamondGame extends Activity implements Game{
 	@Override
 	protected void onResume() {
 		// TODO Auto-generated method stub
+		//游戏启动和暂停返回都会调用
 		super.onResume();
 
 //		wakeLock.acquire();

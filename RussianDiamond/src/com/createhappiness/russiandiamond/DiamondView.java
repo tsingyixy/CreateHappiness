@@ -84,19 +84,16 @@ public class DiamondView extends SurfaceView implements Callback {
 			Log.i("THQ", "begin update");
 			// TODO Auto-generated method stub
 			while(runing){
-				if(!_holder.getSurface().isValid())
+				if(!_holder.getSurface().isValid())      //如果当前画布获取失败则反复获取
 					continue;
 				synchronized (_holder) {
-					Log.i("THQ", "begin paint");
+
 					Canvas canvas = _holder.lockCanvas();
-					Log.i("THQ", canvas==null?"null":"not null");
 					_game.GetCurrentScreen().update();
 					_game.GetCurrentScreen().present();
 					canvas.drawBitmap(_frameBuffer, null, canvas.getClipBounds(), null);
-					Log.i("THQ", "paint");
 					_holder.unlockCanvasAndPost(canvas);
-					Log.i("THQ", "unlock");
-					if(Asset.isLoading)
+					if(Asset.isLoading)       //如果是Loading画面则持续2s
 						try {
 							Thread.sleep(2000);
 							Asset.isLoading = false;
@@ -105,13 +102,13 @@ public class DiamondView extends SurfaceView implements Callback {
 							e.printStackTrace();
 						}
 				}
-				Log.i("THQ", "one time end");
+			//	Log.i("THQ", "one time end");
 			}
 		}
 		
 	}
 
-	public void resume() {
+	public void resume() {      //重新开始游戏
 		// TODO Auto-generated method stub
 			_render = new RenderingThread(_holder);
 			_render.runing = true;
@@ -120,7 +117,7 @@ public class DiamondView extends SurfaceView implements Callback {
 
 	}
 	public void pause(){
-		Log.i("THQ", "Paused");
+//暂停游戏
 		_render.runing = false;
 		while(true)
 		{

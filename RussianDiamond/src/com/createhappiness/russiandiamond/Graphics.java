@@ -32,7 +32,7 @@ public class Graphics {
     public void DrawRect(Rect r){
     	canvas.drawRect(r, pen);
     }
-    public Bitmap CreateImage(String filepath){
+    public Bitmap CreateImage(String filepath){         //加载图像资源
     	InputStream in = null;
     	try {
 			in = assets.open(filepath);
@@ -43,14 +43,14 @@ public class Graphics {
     	//return (null != in) ? BitmapFactory.decodeStream(in):null;
     	return  BitmapFactory.decodeStream(in);
     }
-    public void DrawImage(Bitmap image,int left ,int top){
+    public void DrawImage(Bitmap image,int left ,int top){       //绘制图像到缓冲区
     	//Bitmap bitmap = image.getImage();
     	canvas.drawBitmap(image,left,top,null);
     }
-    public void DrawText(String text,int left,int top){
+    public void DrawText(String text,int left,int top){//绘制字幕到缓冲区
     	canvas.drawText(text, left, top, pen);
     }
-    public void Clear(){
+    public void Clear(){           //用白色清屏
     	canvas.drawColor(Color.WHITE);
     }
 }
