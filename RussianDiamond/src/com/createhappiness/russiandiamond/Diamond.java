@@ -22,6 +22,13 @@ class Player{
     private int y;
     private int[][] diamonds;
     private int[][] world;
+    private long score;
+    public void Score(){
+    	score += 100;
+    }
+    public long GetScore(){
+    	return score;
+    }
 //    private boolean isAccerlate;
     private Graphics g;
     public Player(int[][] world,Graphics g){
@@ -242,7 +249,9 @@ class World implements View.OnTouchListener{
 		//isNew = false;
 	}
 	
-	
+	public void PaintScore(){
+		graphics.DrawText(Long.toString(player.GetScore()), 280, 60);
+	}
 	public int update() { // 更新游戏逻辑
 		//Log.i("THQ", Asset.nextTime==true?"true":"false");
 		if (Asset.frequency == 0) {
@@ -256,8 +265,11 @@ class World implements View.OnTouchListener{
 			}
 			for (int i = 0; i < sum.length; ++i) {
 				if (sum[i] == fields[0].length)
+				{
+					player.Score();
 					for (int j = i; j >= 1; j--)
 						fields[j] = fields[j - 1];
+				}
 			}
 		}
 		return 0;
@@ -265,6 +277,7 @@ class World implements View.OnTouchListener{
 	
 	public void present(){//画图到缓冲区
 		player.present();
+		PaintScore();
 		for (int i = 0; i < fields.length; i++) {
 			for (int j = 0; j < fields[i].length; j++) {
 				if(fields[i][j] == 1)

@@ -21,6 +21,7 @@ public class Asset {
       public static Object lock = new Object();              //用来 同步移动的锁
       public static boolean nextTime;                        //是否产生了一个新方块，因为当新方块产生的时候需要重置按键事件
       public static boolean isLoading;                      //现在画面是否是启动画面，启动画面用来显示LOGO等信息
+      //public static long score;
 }
 class TimeLine{              //时间类，用来记录事件持续时间
 	private static long _start = 0;
