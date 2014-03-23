@@ -1,6 +1,8 @@
 package com.createhappiness.ui;
 
+import android.R;
 import android.app.Activity;
+import android.os.Bundle;
 
 /**
  * 
@@ -10,5 +12,6 @@ import android.app.Activity;
  * 
  */
 public class WelcomeActivity extends Activity {
+
 
 }
